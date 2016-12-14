@@ -5,6 +5,8 @@ using Newtonsoft.Json;
 using System.IO;
 using System.IO.Compression;
 using System.Xml;
+using System.Text.RegularExpressions;
+using Newtonsoft.Json.Linq;
 
 namespace XboxLiveTrace
 {
@@ -52,7 +54,11 @@ namespace XboxLiveTrace
                     consoleData.m_servicesHistory[item.m_host].AddLast(item);
                 }
             }
-            GatherStats(consoleData);
+
+            foreach (var endpoint in consoleData.m_servicesHistory)
+            {
+                consoleData.m_servicesStats.Add(endpoint.Key, new ServiceCallStats(endpoint.Value));
+            }
         }
 
         public void DeserializeCSV(String input)
@@ -82,7 +88,11 @@ namespace XboxLiveTrace
                         consoleData.m_servicesHistory[item.m_host].AddLast(item);
                     }
                 }
-                GatherStats(consoleData);
+
+                foreach (var endpoint in consoleData.m_servicesHistory)
+                {
+                    consoleData.m_servicesStats.Add(endpoint.Key, new ServiceCallStats(endpoint.Value));
+                }
             }
         }
 
@@ -132,160 +142,151 @@ namespace XboxLiveTrace
 
                 consoleData.m_servicesHistory = xboxServiceFrames.ToDictionary(g => g.Host, g => new LinkedList<ServiceCallItem>(g.History.OrderBy(call => call.m_reqTimeUTC)));
 
+                // Xbox telemetry endpoint
+                if(consoleData.m_servicesHistory.ContainsKey("data-vef.xboxlive.com"))
+                {
+                    ConvertCS1ToEvent(consoleData.m_servicesHistory);
+                }
+
+                // Windows Telemetry endpoint
+                if(consoleData.m_servicesHistory.Any(k => k.Key.Contains(".data.microsoft.com")))
+                {
+                    ConvertCS2ToEvent(consoleData.m_servicesHistory);
+                }
+
+                foreach(var endpoint in consoleData.m_servicesHistory)
+                {
+                    consoleData.m_servicesStats.Add(endpoint.Key, new ServiceCallStats(endpoint.Value));
+                }
+
                 m_perConsoleData.Add(consoleFrames.Key, consoleData);
-
-                GatherStats(consoleData);
             }
         }
 
-        private void GatherStats(PerConsoleData data)
+        private void ConvertCS2ToEvent(Dictionary<string, LinkedList<ServiceCallItem>> servicesHistory)
         {
-            foreach(String endpoint in data.m_servicesHistory.Keys)
+            var eventNameMatch1 = new Regex("Microsoft.XboxLive.T[a-zA-Z0-9]{8}.");
+            var eventNameMatch2 = "Microsoft.Xbox.XceBridge";
+
+            var events = servicesHistory.Where(k => k.Key.Contains(".data.microsoft.com"));
+            foreach (var endpoint in events)
             {
-                data.m_servicesStats[endpoint] = new ServiceCallStats();
-                ServiceCallStats stats = data.m_servicesStats[endpoint];
-                
-                //create new Request Body Hash Count Map
-                stats.m_reqBodyHashCountMap = new Dictionary<UInt64 , UInt32 >();
-
-                //Calculate 1st-order stats
-                foreach (ServiceCallItem item in data.m_servicesHistory[endpoint])
-                {
-                    GatherFirstOrderStats(item, stats);
-                }
-
-                // Calculate 2nd-order stats (standard deviation)
-                stats.m_numCalls = 0;
-                stats.m_lastReqTimeUTC = 0;
-
-                foreach (ServiceCallItem item in data.m_servicesHistory[endpoint])
-                {
-                    GatherSecondOrderStats(item, stats);
-                }
+                servicesHistory.Remove(endpoint.Key);
             }
-                
-        }
-
-        private void GatherFirstOrderStats(ServiceCallItem item, ServiceCallStats stats)
-        {
-            // Ignore shoulder taps
-            if (item.m_isShoulderTap)
+            LinkedList<ServiceCallItem> inGameEvents = null;
+            if (servicesHistory.ContainsKey("inGameEvents"))
             {
-                return;
-            }
-
-            UInt64 n = stats.m_numCalls;
-
-            UInt64 avg = stats.m_avgElapsedCallTimeMs;
-            avg = n * avg + item.m_elapsedCallTimeMs;
-            avg /= (n + 1);
-            
-            //update values
-            stats.m_avgElapsedCallTimeMs = avg;
-
-            //track skipped calls
-            if (item.m_reqTimeUTC < stats.m_lastReqTimeUTC)
-            {
-                ++stats.m_numSkippedCalls;
-            }
-
-            //m_avgTimeBetweenReqsMs
-            if (stats.m_lastReqTimeUTC != 0 && item.m_reqTimeUTC >= stats.m_lastReqTimeUTC)
-            {
-                UInt64 avgTime = stats.m_avgTimeBetweenReqsMs;
-                avgTime = n * avgTime + (item.m_reqTimeUTC - stats.m_lastReqTimeUTC) / TimeSpan.TicksPerMillisecond;
-                avgTime /= (n + 1);
-                stats.m_avgTimeBetweenReqsMs = avgTime;
-            }
-
-            //update last call time
-            stats.m_lastReqTimeUTC = item.m_reqTimeUTC;
-
-            //increment num calls for next time
-            ++stats.m_numCalls;
-
-            // Update m_maxElapsedCallTimeMs if applicable
-            if (item.m_elapsedCallTimeMs > stats.m_maxElapsedCallTimeMs)
-            {
-                stats.m_maxElapsedCallTimeMs = item.m_elapsedCallTimeMs;
-            }
-
-            // m_reqBodyHashCountMap
-            if (!stats.m_reqBodyHashCountMap.ContainsKey(item.m_reqBodyHash))
-            {
-                stats.m_reqBodyHashCountMap.Add(item.m_reqBodyHash, 1);
+                inGameEvents = servicesHistory["inGameEvents"];
             }
             else
             {
-                ++stats.m_reqBodyHashCountMap[item.m_reqBodyHash];
+                inGameEvents = new LinkedList<ServiceCallItem>();
+                servicesHistory.Add("inGameEvents", inGameEvents);
             }
-        }
 
-        private void GatherSecondOrderStats(ServiceCallItem item, ServiceCallStats stats)
-        {
-            // Ignore shoulder taps
-            if (item.m_isShoulderTap)
+            foreach (var eventCall in events.SelectMany(e => e.Value))
             {
-                return;
+                var requestBody = eventCall.m_reqBody;
+                var requestBodyJson = JObject.Parse(requestBody);
+                var eventName = requestBodyJson["name"].ToString();
+
+                if (eventNameMatch1.IsMatch(eventName) || eventNameMatch2.StartsWith(eventName))
+                {
+                    var serviceCall = eventCall.Copy();
+                    var eventNameParts = eventName.Split('.');
+
+
+                    serviceCall.m_host = "inGameEvents";
+                    serviceCall.m_eventName = eventNameParts.Last();
+                    serviceCall.m_reqTimeUTC = (UInt64)DateTime.Parse(requestBodyJson["time"].ToString()).ToFileTimeUtc();
+                    serviceCall.m_reqBody = String.Empty;
+
+                    var data = requestBodyJson.GetValue("data") as JObject;
+                    if (data != null)
+                    {
+                        var baseData = data.GetValue("baseData") as JObject;
+
+                        if(baseData != null)
+                        {
+                            var measurements = baseData["measurements"];
+                            serviceCall.m_measurements = measurements != null ? measurements.ToString() : String.Empty;
+
+                            var dimensions = baseData["properties"];
+                            serviceCall.m_measurements = dimensions != null ? dimensions.ToString() : String.Empty;
+                        }
+                    }
+
+                    inGameEvents.AddLast(serviceCall);
+                }
+
             }
-
-            //
-            // Calculate variance
-            // 
-            // Var[n+1] = ( n * Var[n] + ( x[n+1] - Avg ) ^ 2 ) / ( n + 1)
-            //
-            UInt64 avg = stats.m_avgElapsedCallTimeMs;
-            UInt64 n = stats.m_numCalls;
-
-            // m_varElapsedCallTimeMs
-            UInt64 var = stats.m_varElapsedCallTimeMs;
-            UInt64 dev = item.m_elapsedCallTimeMs - avg;
-            var = n * var + dev * dev;
-            var /= (n+1);
-
-            //m_varTimeBetweenReqsMs
-            if(stats.m_lastReqTimeUTC != 0 && item.m_reqTimeUTC >= stats.m_lastReqTimeUTC)
-            {
-                UInt64 localVar = stats.m_varTimeBetweenReqsMs;
-                UInt64 localDev = (item.m_reqTimeUTC - stats.m_lastReqTimeUTC) / TimeSpan.TicksPerMillisecond - avg;
-                localVar = n * localVar + localDev * localDev;
-                localVar /= (n + 1);
-                //update values
-                stats.m_varTimeBetweenReqsMs = localVar;
-            }
-
-            stats.m_lastReqTimeUTC = item.m_reqTimeUTC;
-
-            // increment m_numCalls for next time
-            ++n;
-
-            //update values
-            stats.m_numCalls = n;
-            stats.m_varElapsedCallTimeMs = var;
-
 
         }
 
-        private void CalculateEntropy(String endpoint, ServiceCallStats stats)
+        private void ConvertCS1ToEvent(Dictionary<string, LinkedList<ServiceCallItem>> servicesHistory)
         {
-            //for(int i = 0; i < (int)ServiceCallStats.CallType.CallType_Count; ++i)
+            var events = servicesHistory["data-vef.xboxlive.com"];
+            servicesHistory.Remove("data-vef.xboxlive.com");
+
+            LinkedList<ServiceCallItem> inGameEvents = null;
+            if (servicesHistory.ContainsKey("inGameEvents"))
             {
-                if(stats.m_numCalls == 0)
-                {
-                    return;
-                }
-
-                double entropy = 0.0f;
-
-                foreach (UInt32 it in stats.m_reqBodyHashCountMap.Values)
-                {
-                    double p = ((double)it / (double)stats.m_numCalls);
-                    entropy += p * Math.Log( 1 / p ) / Math.Log(2);
-                }
-
-                stats.m_callEntropy = entropy;
-
+                inGameEvents = servicesHistory["inGameEvents"];
             }
+            else
+            {
+                inGameEvents = new LinkedList<ServiceCallItem>();
+                servicesHistory.Add("inGameEvents", inGameEvents);
+            }
+
+            // Event Name starts with a string in the form of {Publisher}_{TitleId}
+            Regex eventNameMatch = new Regex("[a-zA-z]{4}_[a-zA-Z0-9]{8}");
+
+            foreach(var eventCall in events)
+            {
+                var requestBody = eventCall.m_reqBody;
+
+                var eventArray = requestBody.Split(Environment.NewLine.ToCharArray());
+
+                foreach(var eventLine in eventArray)
+                {
+                    var fields = eventLine.Split('|');
+
+                    if(fields.Length < 12)
+                    {
+                        // This event is not valid as it is missing fields
+                        continue;
+                    }
+
+                    // The name field is in the form of {Publisher}_{TitleId}.{EventName}
+                    var eventNameParts = fields[1].Split('.');
+
+                    if(eventNameParts.Length > 1 && eventNameMatch.IsMatch(eventNameParts[0]))
+                    {
+                        ServiceCallItem splitEvent = eventCall.Copy();
+
+                        splitEvent.m_host = "inGameEvents";
+                        splitEvent.m_eventName = eventNameParts[1];
+                        splitEvent.m_reqTimeUTC = (UInt64)DateTime.Parse(fields[3]).ToFileTimeUtc();
+                        splitEvent.m_reqBody = String.Empty;
+                        splitEvent.m_dimensions = CS1PartBC(fields);
+
+                        inGameEvents.AddLast(splitEvent);
+                    }
+                }
+            }
+        }
+
+        private static string CS1PartBC(string[] fields)
+        {
+            string result = "";
+
+            for(int i = 1; i < fields.Length; ++i)
+            {
+                result += fields[i] + "|";
+            }
+
+            return result;
         }
     }
 }

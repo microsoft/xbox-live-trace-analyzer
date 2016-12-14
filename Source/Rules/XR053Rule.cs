@@ -99,7 +99,7 @@ namespace XboxLiveTrace
             }
         }
 
-        private void ScanCs2EventRecords(ref bool mpRoundStartFound, ref bool mpRoundEndFound, IEnumerable<ServiceCallItem> allCalls)
+        private bool ScanCs2EventRecords(ref bool mpRoundStartFound, ref bool mpRoundEndFound, IEnumerable<ServiceCallItem> allCalls)
         {
             foreach (var call in allCalls)
             {
@@ -124,41 +124,6 @@ namespace XboxLiveTrace
             }
         }
 
-        private string extractEventNameFromCS1Event(string eventBody)
-        {
-            // Example event :0.9.IGED-2.0|XDKS_01FFB41F.EnemyDefeated|....
-            // We're extracting EnemyDefeated from that format
-            var fields = eventBody.Split('|');
-            if (fields.Count() > 2)
-            {
-                var subFields = fields[1].Split('.');
-                // There should be at least 2 fields 
-                if (subFields.Count() >= 2)
-                {
-                    return subFields[subFields.Count() - 1];
-                }
-            }
-
-            return "";
-        }
-
-        private string extractEventNameFromCS2Event(string eventBody)
-        {
-            // Example event :{"ver":"2.1","name":"Microsoft.XboxLive.Txxxxxxxx.EnemyDefeated","time":"2015...
-            // or {"ver":"2.1","name":"Microsoft.Xbox.XceBridge.CS.1.0.0.9.0.7.IGED-2.0.XDKS_0301D082.EnemyDefeated","time":"2016-...
-
-            // We're extracting EnemyDefeated from that json format
-            var eventJsonObjTemplate = new { name = "" };
-            var eventJsonObj = JsonConvert.DeserializeAnonymousType(eventBody, eventJsonObjTemplate);
-
-            var subFields = eventJsonObj.name.Split('.');
-            // There should be at least 2 fields 
-            if (subFields.Count() >= 2)
-            {
-                return subFields[subFields.Count() - 1];
-            }
-
-            return "";
-        }
+        
     }
 }
