@@ -21,31 +21,71 @@ namespace XboxLiveTrace
 
         public override RuleResult Run(IEnumerable<ServiceCallItem> items, ServiceCallStats stats)
         {
-            bool mpRoundStartFound = false, mpRoundEndFound = false;
+            var result = InitializeResult("");
 
             // Check events type
-            if (items.Count() > 0)
+            if (items.Count() == 0)
+                return result;
+
+            var mpEvents = items.Where(e => e.m_eventName.Contains("MultiplayerRound"));
+            var mpStartEvents = mpEvents.Where(e => e.m_eventName.Contains("Start"));
+            var mpEndEvents = mpEvents.Where(e => e.m_eventName.Contains("End"));
+
+            var debugData = mpEvents.Select(e => new { Name = e.m_eventName, ID = e.m_multiplayerCorrelationId });
+
+            var matchEvents = mpEvents.GroupBy(e => e.m_multiplayerCorrelationId);
+
+            // Edge case if a correlation id was reused
+            var duplicates = matchEvents.Where(g => g.Count() > 2);
+
+            var matchedTotalCount = matchEvents.Count(g => g.Count() == 2);
+            var mismatchedEvents = matchEvents.Where(g => g.Count() == 1);
+
+            var mismatchedStartEventCount = mismatchedEvents.Count(g => g.Any(c => c.m_eventName.Contains("Start")));
+            var mismatchedEndEventCount = mismatchedEvents.Count(g => g.Any(c => c.m_eventName.Contains("End")));
+
+            foreach(var set in duplicates)
             {
-                ServiceCallItem first = items.First();
-                if (first.m_host == "inGameEvents")
+                var starts = set.Count(e => e.m_eventName.Contains("Start"));
+                var ends = set.Count(e => e.m_eventName.Contains("End"));
+
+                if(starts > ends)
                 {
-                    ScanInGameEvnetRecords(ref mpRoundStartFound, ref mpRoundEndFound, items);
+                    mismatchedStartEventCount += (starts - ends);
                 }
-                else if (first.m_host == "data-vef.xboxlive.com")
+                else if(starts < ends)
                 {
-                    ScanCs1EventRecords(ref mpRoundStartFound, ref mpRoundEndFound, items);
-                }
-                else if (first.m_host.EndsWith(".data.microsoft.com"))
-                {
-                    ScanCs2EventRecords(ref mpRoundStartFound, ref mpRoundEndFound, items);
+                    mismatchedEndEventCount += (ends - starts);
                 }
             }
 
-            RuleResult result = InitializeResult(DisplayName, "");
-            if (!mpRoundStartFound || !mpRoundEndFound)
+            var mismatchedTotalCount = mismatchedEvents.Count();
+
+            double startToEndRatio = (double)mpStartEvents.Count() / (double)mpEndEvents.Count();
+            double unmatchedStartRatio = (double)mismatchedStartEventCount / (double)mpStartEvents.Count();
+            double unmatchedEndRatio = (double)mismatchedEndEventCount / (double)mpEndEvents.Count();
+
+            if (startToEndRatio < .9 || startToEndRatio > 1.1)
             {
-                result.Violations.Add(new Violation());
+                result.AddViolation(ViolationLevel.Error, $"Ratio of Start and End events is {startToEndRatio:0.0%}. Allowed range is 90-110%.");
             }
+            if(unmatchedStartRatio > .1)
+            {
+                result.AddViolation(ViolationLevel.Error, $"{unmatchedStartRatio:0.0%} of MultiplayerRoundStart events were unmatched. Allowed amount is less than 10%.");
+            }
+            if (unmatchedEndRatio > .1)
+            {
+                result.AddViolation(ViolationLevel.Error, $"{unmatchedEndRatio:0.0%} of MultiplayerRoundEnd events were unmatched. Allowed amount is less than 10%.");
+            }
+
+            result.Results.Add("TotalStartEvents", mpStartEvents.Count());
+            result.Results.Add("TotalEndEvents", mpEndEvents.Count());
+            result.Results.Add("StartToEndRatio", startToEndRatio);
+            result.Results.Add("UnmatchedStartEventCount", mismatchedStartEventCount);
+            result.Results.Add("UnmatchedStartPercentage", unmatchedStartRatio);
+            result.Results.Add("UnmatchedEndEventCount", mismatchedEndEventCount);
+            result.Results.Add("UnmatchedEndPercentage", unmatchedEndRatio);
+
             return result;
         }
 
@@ -53,77 +93,5 @@ namespace XboxLiveTrace
         {
             return null;
         }
-
-        private static void ScanInGameEvnetRecords(ref bool mpRoundStartFound, ref bool mpRoundEndFound, IEnumerable<ServiceCallItem> allCalls)
-        {
-            foreach (var call in allCalls)
-            {
-                if (call.m_eventName == "MultiplayerRoundStart")
-                {
-                    mpRoundStartFound = true;
-                }
-                else if (call.m_eventName == "MultiplayerRoundEnd")
-                {
-                    mpRoundEndFound = true;
-                }
-
-                if (mpRoundStartFound && mpRoundEndFound)
-                {
-                    return;
-                }
-            }
-        }
-
-        private void ScanCs1EventRecords(ref bool mpRoundStartFound, ref bool mpRoundEndFound, IEnumerable<ServiceCallItem> allCalls)
-        {
-            foreach (var call in allCalls)
-            {
-                var events = call.m_reqBody.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                foreach (var e in events)
-                {
-                    var eventName = extractEventNameFromCS1Event(e);
-                    if (eventName == "MultiplayerRoundStart")
-                    {
-                        mpRoundStartFound = true;
-                    }
-                    else if (eventName == "MultiplayerRoundEnd")
-                    {
-                        mpRoundEndFound = true;
-                    }
-
-                    if (mpRoundStartFound && mpRoundEndFound)
-                    {
-                        return;
-                    }
-                }
-            }
-        }
-
-        private bool ScanCs2EventRecords(ref bool mpRoundStartFound, ref bool mpRoundEndFound, IEnumerable<ServiceCallItem> allCalls)
-        {
-            foreach (var call in allCalls)
-            {
-                var events = call.m_reqBody.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                foreach (var e in events)
-                {
-                    var eventName = extractEventNameFromCS2Event(e);
-                    if (eventName == "MultiplayerRoundStart")
-                    {
-                        mpRoundStartFound = true;
-                    }
-                    else if (eventName == "MultiplayerRoundEnd")
-                    {
-                        mpRoundEndFound = true;
-                    }
-
-                    if (mpRoundStartFound && mpRoundEndFound)
-                    {
-                        return;
-                    }
-                }
-            }
-        }
-
-        
     }
 }

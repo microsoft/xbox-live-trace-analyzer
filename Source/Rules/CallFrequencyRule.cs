@@ -6,14 +6,14 @@ namespace XboxLiveTrace
 {
     internal class CallFrequencyRule : IRule
     {
-        public UInt32 m_sustainedTimePeriodSeconds;
-        public UInt32 m_sustainedCallLimit;
-        public UInt32 m_burstTimePeriodSeconds;
-        public UInt32 m_burstCallLimit;
+        public UInt32 m_sustainedTimePeriodSeconds = Constants.CallFrequencySustainedTimePeriod;
+        public UInt32 m_sustainedCallLimit = Constants.CallFrequencySustainedAllowedCalls;
+        public UInt32 m_burstTimePeriodSeconds = Constants.CallFrequencyBurstTimePeriod;
+        public UInt32 m_burstCallLimit = Constants.CallFrequencyBurstAllowedCalls;
 
-        public UInt64 m_avgTimeBetweenReqsMs;
-        public UInt64 m_avgElapsedCallTimeMs;
-        public UInt64 m_maxElapsedCallTimeMs;
+        public UInt64 m_avgTimeBetweenReqsMs = Constants.CallFrequencyAvgTimeBetweenReq;
+        public UInt64 m_avgElapsedCallTimeMs = Constants.CallFrequencyAvgElapsedCallTime;
+        public UInt64 m_maxElapsedCallTimeMs = Constants.CallFrequencyMaxElapsedCallTime;
 
         public ServiceCallStats m_stats;
         public UInt32 m_endpointSustainedViolations = 0;
@@ -22,13 +22,6 @@ namespace XboxLiveTrace
 
         public CallFrequencyRule() : base(Constants.CallFrequency)
         {
-            m_sustainedTimePeriodSeconds = Constants.CallFrequencySustainedTimePeriod;
-            m_sustainedCallLimit = Constants.CallFrequencySustainedAllowedCalls;
-            m_burstTimePeriodSeconds = Constants.CallFrequencyBurstTimePeriod;
-            m_burstCallLimit = Constants.CallFrequencyBurstAllowedCalls;
-            m_avgTimeBetweenReqsMs = Constants.CallFrequencyAvgTimeBetweenReq;
-            m_avgElapsedCallTimeMs = Constants.CallFrequencyAvgElapsedCallTime;
-            m_maxElapsedCallTimeMs = Constants.CallFrequencyMaxElapsedCallTime;
         }
 
 

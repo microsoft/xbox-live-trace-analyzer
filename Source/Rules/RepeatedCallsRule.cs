@@ -8,7 +8,7 @@ namespace XboxLiveTrace
     internal class RepeatedCallsRule : IRule
     {
 
-        public UInt32 m_minAllowedRepeatIntervalMs;
+        public UInt32 m_minAllowedRepeatIntervalMs = 2000;
 
         public Int32 m_totalCallsChecked = 0;
         public Int32 m_numberOfRepeats = 0;
@@ -16,7 +16,6 @@ namespace XboxLiveTrace
 
         public RepeatedCallsRule() : base(Constants.RepeatedCalls)
         {
-            m_minAllowedRepeatIntervalMs = 2000; 
         }
 
 

@@ -68,10 +68,10 @@ namespace XboxLiveTrace
             }
         }
 
-        public void RunRulesOnData(String console, Dictionary<String, LinkedList<ServiceCallItem>> history, Dictionary<String, ServiceCallStats> stats)
+        public void RunRulesOnData(String console, DataVersion dataVersion, ServiceCallData.PerConsoleData data)
         {
             // Expand the wildcard (*) endpoint rules out to match the actual endpoints
-            MapRules(history.Keys);
+            MapRules(data.m_servicesHistory.Keys);
 
             if(!m_results.ContainsKey(console))
             {
@@ -81,9 +81,16 @@ namespace XboxLiveTrace
             // Now the rules can be run in parallel
             Parallel.ForEach(GetAllRules(), rule => 
             {
-                if (history.ContainsKey(rule.Endpoint))
+                if (data.m_servicesHistory.ContainsKey(rule.Endpoint))
                 {
-                    m_results[console].Add(rule.Run(history[rule.Endpoint], stats[rule.Endpoint]));
+                    if (dataVersion >= rule.GetMinimumDataVersion())
+                    {
+                        m_results[console].Add(rule.Run(data.m_servicesHistory[rule.Endpoint], data.m_servicesStats[rule.Endpoint]));
+                    }
+                    else
+                    {
+                        m_results[console].Add(rule.InvalidDataVersion());
+                    }
                 }
             });
 
