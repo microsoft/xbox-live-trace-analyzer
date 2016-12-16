@@ -218,12 +218,12 @@ namespace XboxLiveTrace
                             var measurements = baseData["measurements"];
                             serviceCall.m_measurements = measurements != null ? measurements.ToString() : String.Empty;
 
-                            var dimensions = baseData["properties"];
-                            serviceCall.m_measurements = dimensions != null ? dimensions.ToString() : String.Empty;
+                            var properties = baseData["properties"];
+                            serviceCall.m_measurements = properties != null ? properties.ToString() : String.Empty;
                             if (serviceCall.m_eventName.Contains("MultiplayerRoundStart") || serviceCall.m_eventName.Contains("MultiplayerRoundEnd"))
                             {
-                                //serviceCall.m_playerSessionId = fields[15];
-                                //serviceCall.m_multiplayerCorrelationId = fields[16];
+                                serviceCall.m_playerSessionId = baseData["playerSession"].ToString();
+                                serviceCall.m_multiplayerCorrelationId = properties["MultiplayerCorrelationId"].ToString();
                             }
                         }
                     }
