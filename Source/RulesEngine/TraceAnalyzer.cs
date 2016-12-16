@@ -247,7 +247,7 @@ namespace XboxLiveTrace
                 m_rulesEngine.ClearAllRules();
                 m_rulesEngine.AddRules(m_rules);
 
-                m_rulesEngine.RunRulesOnData(console.Key, console.Value.m_servicesHistory, console.Value.m_servicesStats);
+                m_rulesEngine.RunRulesOnData(console.Key, console.Value);
 
                 Parallel.ForEach(m_reports, report => report.RunReport(OutputDirectory, m_rulesEngine.GetResults(console.Key), m_data.m_endpointToService, m_IsLatestBinary, m_latestBinaryVersion));
             }
@@ -258,7 +258,7 @@ namespace XboxLiveTrace
                     m_rulesEngine.ClearAllRules();
                     m_rulesEngine.AddRules(m_rules);
 
-                    m_rulesEngine.RunRulesOnData(console.Key, console.Value.m_servicesHistory, console.Value.m_servicesStats);
+                    m_rulesEngine.RunRulesOnData(console.Key, console.Value);
 
                     String consolePath = Path.Combine(OutputDirectory, console.Key);
 

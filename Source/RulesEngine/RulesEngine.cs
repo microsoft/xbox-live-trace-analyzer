@@ -68,7 +68,7 @@ namespace XboxLiveTrace
             }
         }
 
-        public void RunRulesOnData(String console, DataVersion dataVersion, ServiceCallData.PerConsoleData data)
+        public void RunRulesOnData(String console, ServiceCallData.PerConsoleData data)
         {
             // Expand the wildcard (*) endpoint rules out to match the actual endpoints
             MapRules(data.m_servicesHistory.Keys);
@@ -83,14 +83,7 @@ namespace XboxLiveTrace
             {
                 if (data.m_servicesHistory.ContainsKey(rule.Endpoint))
                 {
-                    if (dataVersion >= rule.GetMinimumDataVersion())
-                    {
-                        m_results[console].Add(rule.Run(data.m_servicesHistory[rule.Endpoint], data.m_servicesStats[rule.Endpoint]));
-                    }
-                    else
-                    {
-                        m_results[console].Add(rule.InvalidDataVersion());
-                    }
+                    m_results[console].Add(rule.Run(data.m_servicesHistory[rule.Endpoint], data.m_servicesStats[rule.Endpoint]));
                 }
             });
 

@@ -64,7 +64,7 @@ namespace XboxLiveTrace
             {
                 //"XRName":"XR-053: Instrumentation of Online Multiplayer Events"
                 var x53results = result.Where(r => r.RuleName == "XR053Rule");
-                bool x53violation = true;
+
                 if (x53results.Count() > 0)
                 {
                     var x53result = x53results.First();
