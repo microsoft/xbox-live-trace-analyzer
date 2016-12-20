@@ -207,6 +207,12 @@ namespace XboxLiveTrace
                 analyzer.CustomUserAgent = m_customUserAgent;
 
                 analyzer.LoadData(m_dataFilePath);
+
+                if (String.IsNullOrEmpty(m_rulesFilePath) == false)
+                {
+                    analyzer.LoadRules(m_rulesFilePath);
+                }
+
                 analyzer.LoadDefaultRules();
 
                 if (m_defaults)
@@ -276,11 +282,6 @@ namespace XboxLiveTrace
                 }
 
                 analyzer.LoadPlugins("plugins");
-
-                if (String.IsNullOrEmpty(m_rulesFilePath) == false)
-                {
-                    analyzer.LoadRules(m_rulesFilePath);
-                }
 
                 foreach(var report in m_reports)
                 {

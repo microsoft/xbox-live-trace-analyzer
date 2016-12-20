@@ -136,6 +136,43 @@ namespace XboxLiveTrace
             return m_callDataFromJSON;
         }
 
+        public ServiceCallItem Copy()
+        {
+            var copy = new ServiceCallItem();
+            copy.m_logVersion = m_logVersion;
+            copy.m_host = m_host;
+            copy.m_uri = m_uri;
+            copy.m_xboxUserId = m_xboxUserId;
+            copy.m_multiplayerCorrelationId = m_multiplayerCorrelationId;
+            copy.m_reqHeader = m_reqHeader;
+            copy.m_reqBody = m_reqBody;
+            copy.m_rspHeader = m_rspHeader;
+            copy.m_rspBody = m_rspBody;
+            copy.m_rspFullString = m_rspFullString;
+            copy.m_branch = m_branch;
+            copy.m_sessionReferenceUriPath = m_sessionReferenceUriPath;
+            copy.m_eventName = m_eventName;
+            copy.m_playerSessionId = m_playerSessionId;
+            copy.m_dimensions = m_dimensions;
+            copy.m_measurements = m_measurements;
+            copy.m_breadCrumb = m_breadCrumb;
+            copy.m_xsapiMethods = m_xsapiMethods;
+            copy.m_callDataFromJSON = m_callDataFromJSON;
+            copy.m_consoleIP = m_consoleIP;
+            copy.m_version = m_version;
+            copy.m_httpStatusCode = m_httpStatusCode;
+            copy.m_reqBodyHash = m_reqBodyHash;
+            copy.m_elapsedCallTimeMs = m_elapsedCallTimeMs;
+            copy.m_reqTimeUTC = m_reqTimeUTC;
+            copy.m_startTimeUTC = m_startTimeUTC;
+            copy.m_changeNumber = m_changeNumber;
+            copy.m_isGet = m_isGet;
+            copy.m_isShoulderTap = m_isShoulderTap;
+            copy.m_isInGameEvent = m_isInGameEvent;
+
+            return copy;
+        }
+
         #region Factory Methods
         public static ServiceCallItem FromJson(XmlNode serviceCallNode)
         {

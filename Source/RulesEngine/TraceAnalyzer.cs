@@ -247,7 +247,7 @@ namespace XboxLiveTrace
                 m_rulesEngine.ClearAllRules();
                 m_rulesEngine.AddRules(m_rules);
 
-                m_rulesEngine.RunRulesOnData(console.Key, console.Value.m_servicesHistory, console.Value.m_servicesStats);
+                m_rulesEngine.RunRulesOnData(console.Key, console.Value);
 
                 Parallel.ForEach(m_reports, report => report.RunReport(OutputDirectory, m_rulesEngine.GetResults(console.Key), m_data.m_endpointToService, m_IsLatestBinary, m_latestBinaryVersion));
             }
@@ -258,7 +258,7 @@ namespace XboxLiveTrace
                     m_rulesEngine.ClearAllRules();
                     m_rulesEngine.AddRules(m_rules);
 
-                    m_rulesEngine.RunRulesOnData(console.Key, console.Value.m_servicesHistory, console.Value.m_servicesStats);
+                    m_rulesEngine.RunRulesOnData(console.Key, console.Value);
 
                     String consolePath = Path.Combine(OutputDirectory, console.Key);
 
@@ -295,33 +295,9 @@ namespace XboxLiveTrace
         }
 
         public void GetLatestVersionNumbers()
-        {
-            bool checkForNewVersion = true;
-            //Here’s the production link:
-            String versionEndpoint = "http://aka.ms/xbltaversion";
+        {        
+            m_latestBinaryVersion = VersionInfo.Version;
 
-            if (checkForNewVersion == true)
-            {
-                var request = (HttpWebRequest)WebRequest.Create(versionEndpoint);
-
-                var response = (HttpWebResponse)request.GetResponse();
-
-                using (var dataStream = new StreamReader(response.GetResponseStream()))
-                {
-                    String[] splitParams = { "\r\n" };
-
-                    // First line of the file is the rules, second is the binary
-                    var versionStrings = dataStream.ReadToEnd().Split(splitParams, StringSplitOptions.None);
-                    if (versionStrings.Length == 2)
-                    {
-                        m_latestBinaryVersion = versionStrings[1];
-                    }
-                }
-            }
-            else
-            {
-                m_latestBinaryVersion = VersionInfo.Version;
-            }
             var localVersion = Version.Parse(VersionInfo.Version);
             var currentVersion = Version.Parse(m_latestBinaryVersion);
 
