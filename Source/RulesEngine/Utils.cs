@@ -102,7 +102,7 @@ namespace XboxLiveTrace
                  || frame.m_reqHeader.Contains("User-Agent: XboxServicesAPI")
                  || frame.m_reqHeader.Contains("X-XBL-Build-Version")  // XCE CS1.0 event
                  || frame.m_reqHeader.Contains("X-AuthXToken")   // UTC upload CS2.1 events
-                 || frame.m_reqHeader.Contains($"User-Agent: {customUserAgent}");
+                 || (!String.IsNullOrEmpty(customUserAgent) && frame.m_reqHeader.Contains($"User-Agent: {customUserAgent}"));
         }
 
         public static String GeneratePathToFile(String file)
