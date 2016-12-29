@@ -8,15 +8,12 @@ namespace XboxLiveTrace
 {
     internal class PollingDetectionRule : IRule
     {
-        private float m_sameDeltaThresholdPercentage;
-        private float m_maxFrequencyMs;
-        private int m_minSequenceSize;
+        private float m_sameDeltaThresholdPercentage = Constants.PollingDetectionSameDeltaThresholdMs;
+        private float m_maxFrequencyMs = Constants.PollingDetectionMaxFrequencyMs;
+        private int m_minSequenceSize = Constants.PollingDetectionMinSequenceSize;
         
         public PollingDetectionRule() : base(Constants.PollDetection)
         {
-            m_sameDeltaThresholdPercentage = Constants.PollingDetectionSameDeltaThresholdMs;
-            m_maxFrequencyMs = Constants.PollingDetectionMaxFrequencyMs;
-            m_minSequenceSize = Constants.PollingDetectionMinSequenceSize;
         }
 
         class CallDelta

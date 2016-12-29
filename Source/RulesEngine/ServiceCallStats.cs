@@ -163,7 +163,7 @@ namespace XboxLiveTrace
 
                 foreach (UInt32 it in m_reqBodyHashCountMap.Values)
                 {
-                    double p = ((double)it / (double)stats.m_numCalls);
+                    double p = ((double)it / (double)m_numCalls);
                     entropy += p * Math.Log(1 / p) / Math.Log(2);
                 }
 

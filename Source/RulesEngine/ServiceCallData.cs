@@ -11,14 +11,14 @@ using Newtonsoft.Json.Linq;
 namespace XboxLiveTrace
 {
     internal class ServiceCallData
-    {
+    {   
         public class PerConsoleData
         {
             public Dictionary<String, LinkedList<ServiceCallItem>> m_servicesHistory = new Dictionary<string, LinkedList<ServiceCallItem>>();
             public Dictionary<String, ServiceCallStats> m_servicesStats = new Dictionary<string, ServiceCallStats>();
         }
 
-        public static bool m_allEndpoints = false; 
+        public static bool m_allEndpoints = false;
 
         public Dictionary<String, PerConsoleData> m_perConsoleData = new Dictionary<string, PerConsoleData>();
         public Dictionary<String, Tuple<String, String>> m_endpointToService;
@@ -168,7 +168,7 @@ namespace XboxLiveTrace
             var eventNameMatch1 = new Regex("Microsoft.XboxLive.T[a-zA-Z0-9]{8}.");
             var eventNameMatch2 = "Microsoft.Xbox.XceBridge";
 
-            var events = servicesHistory.Where(k => k.Key.Contains(".data.microsoft.com"));
+            var events = servicesHistory.Where(k => k.Key.Contains(".data.microsoft.com")).ToList();
             foreach (var endpoint in events)
             {
                 servicesHistory.Remove(endpoint.Key);
@@ -187,6 +187,13 @@ namespace XboxLiveTrace
             foreach (var eventCall in events.SelectMany(e => e.Value))
             {
                 var requestBody = eventCall.m_reqBody;
+
+                // If there's nothing in the request body, then there was an error with the event and we can't parse it.
+                if(string.IsNullOrEmpty(requestBody))
+                {
+                    continue;
+                }
+
                 var requestBodyJson = JObject.Parse(requestBody);
                 var eventName = requestBodyJson["name"].ToString();
 
@@ -211,8 +218,13 @@ namespace XboxLiveTrace
                             var measurements = baseData["measurements"];
                             serviceCall.m_measurements = measurements != null ? measurements.ToString() : String.Empty;
 
-                            var dimensions = baseData["properties"];
-                            serviceCall.m_measurements = dimensions != null ? dimensions.ToString() : String.Empty;
+                            var properties = baseData["properties"];
+                            serviceCall.m_measurements = properties != null ? properties.ToString() : String.Empty;
+                            if (serviceCall.m_eventName.Contains("MultiplayerRoundStart") || serviceCall.m_eventName.Contains("MultiplayerRoundEnd"))
+                            {
+                                serviceCall.m_playerSessionId = baseData["playerSession"].ToString();
+                                serviceCall.m_multiplayerCorrelationId = properties["MultiplayerCorrelationId"].ToString();
+                            }
                         }
                     }
 
@@ -267,9 +279,16 @@ namespace XboxLiveTrace
 
                         splitEvent.m_host = "inGameEvents";
                         splitEvent.m_eventName = eventNameParts[1];
-                        splitEvent.m_reqTimeUTC = (UInt64)DateTime.Parse(fields[3]).ToFileTimeUtc();
+                        splitEvent.m_reqTimeUTC = (UInt64)DateTime.Parse(fields[2]).ToFileTimeUtc();
                         splitEvent.m_reqBody = String.Empty;
                         splitEvent.m_dimensions = CS1PartBC(fields);
+                        splitEvent.m_isInGameEvent = true;
+                        
+                        if(splitEvent.m_eventName.Contains("MultiplayerRoundStart") || splitEvent.m_eventName.Contains("MultiplayerRoundEnd"))
+                        {
+                            splitEvent.m_playerSessionId = fields[15];
+                            splitEvent.m_multiplayerCorrelationId = fields[16];
+                        }
 
                         inGameEvents.AddLast(splitEvent);
                     }

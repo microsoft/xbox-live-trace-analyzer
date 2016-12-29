@@ -9,13 +9,12 @@ namespace XboxLiveTrace
 {    
     internal class BatchFrequencyRule : IRule 
     {
-        public UInt32 m_BatchSetDetectionWindowsMs = 0;
+        public UInt32 m_BatchSetDetectionWindowsMs = Constants.BatchDetectionWindowPeriod;
         public Dictionary<string, string> m_MatchPatterns = new Dictionary<string, string>();
         public UInt32 m_totalBatchCallCount = 0;
 
         public BatchFrequencyRule() : base(Constants.BatchFrequency)
         {
-            m_BatchSetDetectionWindowsMs = Constants.BatchDetectionWindowPeriod;
         }
 
         public override JObject SerializeJson()
