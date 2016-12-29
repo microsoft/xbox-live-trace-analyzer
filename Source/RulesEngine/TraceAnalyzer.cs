@@ -137,7 +137,7 @@ namespace XboxLiveTrace
 
                             foreach (var assembly in assemblies.Where(a => a.GlobalAssemblyCache == false))
                             {
-                                foreach(var type in assembly.GetTypes().Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(IRule))))
+                                foreach(var type in assembly.GetTypes().Where(t => typeof(IRule).IsAssignableFrom(t)))
                                 {
                                     if(type.Name.EndsWith(ruleName))
                                     {
@@ -321,9 +321,7 @@ namespace XboxLiveTrace
             {
                 foreach (var plugin in Directory.EnumerateFiles(pluginDirectory, "*.dll"))
                 {
-                    var assembly = Assembly.LoadFrom(plugin);
-
-                    //AppDomain.CurrentDomain.;
+                    Assembly.LoadFrom(plugin);
                 }
             }
         }
