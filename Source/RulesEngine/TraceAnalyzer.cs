@@ -214,11 +214,21 @@ namespace XboxLiveTrace
 
             foreach (var assembly in assemblies)
             {
-                foreach (var type in assembly.GetTypes().Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(IReport))))
+                Type[] types = null;
+                try
+                {
+                    types = assembly.GetTypes();
+                }
+                catch(ReflectionTypeLoadException e)
+                {
+                    types = e.Types;
+                }
+
+                foreach (var type in types.Where(t => t != null && typeof(IReport).IsAssignableFrom(t)))
                 {
                     if (type.Name.EndsWith(reportType))
                     {
-                        IReport report = Activator.CreateInstance(type, new object[] { outputFile }) as IReport;
+                        IReport report = Activator.CreateInstance(type) as IReport;
                         m_reports.Add(report);
                         return;
                     }
@@ -311,9 +321,9 @@ namespace XboxLiveTrace
             {
                 foreach (var plugin in Directory.EnumerateFiles(pluginDirectory, "*.dll"))
                 {
-                    var assembly = File.ReadAllBytes(plugin);
+                    var assembly = Assembly.LoadFrom(plugin);
 
-                    AppDomain.CurrentDomain.Load(assembly);
+                    //AppDomain.CurrentDomain.;
                 }
             }
         }
