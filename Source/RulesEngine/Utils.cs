@@ -102,7 +102,7 @@ namespace XboxLiveTrace
         public static bool IsAnalyzedService(ServiceCallItem frame, String customUserAgent)
         {
             return (frame.m_reqHeader.Contains("x-xbl-api-build-version:") && !frame.m_reqHeader.Contains("x-xbl-api-build-version: adk"))
-                 || (frame.m_reqHeader.Contains("User-Agent: XboxServicesAPI") && !frame.m_reqHeader.Contains("User-Agent: XboxServicesAPI/1.0.0.0"))
+                 || (frame.m_reqHeader.Contains("User-Agent: XboxServicesAPI") && !frame.m_reqHeader.Contains("x-xbl-client-name"))
                  || frame.m_reqHeader.Contains("X-XBL-Build-Version")  // XCE CS1.0 event
                  || frame.m_reqHeader.Contains("X-AuthXToken")   // UTC upload CS2.1 events
                  || (!String.IsNullOrEmpty(customUserAgent) && frame.m_reqHeader.Contains($"User-Agent: {customUserAgent}"));
