@@ -215,7 +215,7 @@ body {
 
 .endpoint-results .endpoint-header {
     text-align: center;
-    
+    color: #DCDCDC;
     font-size: 18px;
     width: 100%;
     padding: 5px;
@@ -230,9 +230,10 @@ body {
     top:0;
     position:fixed;
     width:auto;
-    z-index: 4;
+    z-index: -1;
     margin-top: 0px;
     color: #DCDCDC;
+    Display: none;
 }
 
 .result-container .endpoint-results {

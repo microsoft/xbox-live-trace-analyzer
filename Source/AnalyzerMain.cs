@@ -226,13 +226,6 @@ namespace XboxLiveTrace
                     analyzer.AddRule(new StatsRecorder { Endpoint = "*" });
                     analyzer.AddRule(new CallRecorder { Endpoint = "*" });
                     analyzer.AddRule(new XR049Rule { Endpoint = "userpresence.xboxlive.com" });
-                    if (analyzer.IsDataContainsEndpoint("sessiondirectory.xboxlive.com"))
-                    {
-                        analyzer.AddRule(new XR053Rule { Endpoint = "inGameEvents" });
-                        analyzer.AddRule(new XR053Rule { Endpoint = "data-vef.xboxlive.com" });
-                        analyzer.AddRule(new XR053Rule { Endpoint = "*.data.microsoft.com" });
-                    }
-
                     analyzer.AddReport(new PerEndpointJsonReport( m_jsonOnly));
                     analyzer.AddReport(new CallReport( m_jsonOnly));
                     analyzer.AddReport(new StatsReport( m_jsonOnly));
@@ -248,7 +241,7 @@ namespace XboxLiveTrace
                             using (var outputFile = new System.IO.Compression.ZipArchive(htmlReport))
                             {
                                 
-                                foreach (var entry in outputFile.Entries)
+                                foreach (var entry in outputFile.Entries.Where(e => e.Name.Contains('.')))
                                 {
                                     bool create_subDir = analyzer.ConsoleList.Count() > 1;
                                     foreach (var console in analyzer.ConsoleList)
@@ -264,9 +257,12 @@ namespace XboxLiveTrace
                                             Directory.CreateDirectory(path);
                                         }
 
-                                        Directory.CreateDirectory(Path.Combine(path, "css"));
-                                        Directory.CreateDirectory(Path.Combine(path, "img"));
-                                        Directory.CreateDirectory(Path.Combine(path, "js"));
+                                        if (!Directory.Exists(Path.Combine(path, "css")))
+                                            Directory.CreateDirectory(Path.Combine(path, "css"));
+                                        if (!Directory.Exists(Path.Combine(path, "img")))
+                                            Directory.CreateDirectory(Path.Combine(path, "img"));
+                                        if (!Directory.Exists(Path.Combine(path, "js")))
+                                            Directory.CreateDirectory(Path.Combine(path, "js"));
 
                                         using (var temp = entry.Open())
                                         {

@@ -32,6 +32,12 @@ namespace XboxLiveTrace
             foreach (var callResult in calls)
             {
                 var callList = callResult.Results["Calls"] as IEnumerable<ServiceCallItem>;
+
+                if(callList.Count() == 0)
+                {
+                    continue;
+                }
+
                 JObject host = new JObject();
                 host["Uri"] = callResult.Endpoint;
 
