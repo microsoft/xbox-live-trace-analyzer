@@ -268,6 +268,11 @@ namespace XboxLiveTrace
             {
                 foreach (var console in m_data.m_perConsoleData)
                 {
+                    if(console.Value.m_servicesHistory.Count == 0)
+                    {
+                        continue;
+                    }
+
                     m_rulesEngine.ClearAllRules();
                     m_rulesEngine.AddRules(m_rules);
 
@@ -280,7 +285,9 @@ namespace XboxLiveTrace
                         Directory.CreateDirectory(consolePath);
                     }
 
-                    Parallel.ForEach(m_reports, report => report.RunReport(consolePath, m_rulesEngine.GetResults(console.Key), m_data.m_endpointToService, m_IsLatestBinary, m_latestBinaryVersion));
+                    //Parallel.ForEach(m_reports, report => report.RunReport(consolePath, m_rulesEngine.GetResults(console.Key), m_data.m_endpointToService, m_IsLatestBinary, m_latestBinaryVersion));
+
+                    m_reports.ForEach(report => report.RunReport(consolePath, m_rulesEngine.GetResults(console.Key), m_data.m_endpointToService, m_IsLatestBinary, m_latestBinaryVersion));
                 }
             }
         }

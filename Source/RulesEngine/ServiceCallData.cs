@@ -197,7 +197,17 @@ namespace XboxLiveTrace
                     continue;
                 }
 
-                var requestBodyJson = JObject.Parse(requestBody);
+                JObject requestBodyJson;
+
+                try
+                {
+                    requestBodyJson = JObject.Parse(requestBody);
+                }
+                catch
+                {
+                    continue;
+                }
+
                 var eventName = requestBodyJson["name"].ToString();
 
                 if (eventNameMatch1.IsMatch(eventName) || eventNameMatch2.StartsWith(eventName))
