@@ -204,7 +204,7 @@ namespace XboxLiveTrace
 
             XboxLiveTrace.TraceAnalyzer analyzer = new TraceAnalyzer(m_isInternal, m_allEndpoints, m_onlineChecks);
 
-            //try
+            try
             {
                 analyzer.OutputDirectory = m_outputDirectory;
                 analyzer.CustomUserAgent = m_customUserAgent;
@@ -289,13 +289,13 @@ namespace XboxLiveTrace
 
                 analyzer.Run();
             }
-            //catch (Exception e)
-            //{
-            //    Console.WriteLine(e.ToString());
-            //    //Show the help message
-            //    OutputHelp();
-            //    return;
-            //}
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                //Show the help message
+                OutputHelp();
+                return;
+            }
         }
     }
 }
