@@ -39,8 +39,8 @@ namespace XboxLiveTrace
             m_endpointBurstViolations = 0;
 
             // Look through items to determine where excess calls occurred
-            var sustainedExcessCallsPerWindow = Utils.GetExcessCallsForTimeWindow(items, m_sustainedTimePeriodSeconds * 1000, (UInt32)(m_sustainedCallLimit * .9));
-            var burstExcessCallsPerWindow = Utils.GetExcessCallsForTimeWindow(items, m_burstTimePeriodSeconds * 1000, (UInt32)(m_burstCallLimit * .9));
+            var sustainedExcessCallsPerWindow = Utils.GetExcessCallsForTimeWindow(items, m_sustainedTimePeriodSeconds * 1000, (UInt32)(m_sustainedCallLimit * .95));
+            var burstExcessCallsPerWindow = Utils.GetExcessCallsForTimeWindow(items, m_burstTimePeriodSeconds * 1000, (UInt32)(m_burstCallLimit * .95));
 
             foreach (var excessCalls in sustainedExcessCallsPerWindow)
             {
@@ -143,7 +143,7 @@ namespace XboxLiveTrace
 
         public static String Description
         {
-            get { return "Analyzes the frequency of calls over the length of the capture and reports the number of times that the title exceeded the expected limits."; }
+            get { return "Analyzes the frequency of calls over the length of the capture and reports the number of times that the title exceeded the expected limits. Do note that this rule is more strict than Fine Grainned Rate Limiting to ensure there is some buffer when in RETAIL."; }
         }
     }
 }
