@@ -23,8 +23,7 @@
             "SustainedCallPeriod": "300",
             "SustainedCallLimit": "100",
             "BurstCallPeriod": "15",
-            "BurstCallLimit": "30"  
-         
+            "BurstCallLimit": "10"  
         }
     }
     ,
