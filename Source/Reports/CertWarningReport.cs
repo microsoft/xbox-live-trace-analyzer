@@ -59,9 +59,6 @@ namespace XboxLiveTrace
                 });
             }
 
-            // If we saw sessiondirectory traffic, then we assume you're  using multiplayer.
-            bool multiplayerUsed = result.Any(r => r.Endpoint == "sessiondirectory.xboxlive.com" && r.RuleName == "CallRecorder");
-
             using (var output = new StreamWriter(Path.Combine(outputDirectory, m_json ? "certWarning.json" : "certWarning.js")))
             {
                 if (!m_json)
