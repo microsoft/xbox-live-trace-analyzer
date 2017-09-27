@@ -120,6 +120,32 @@
     ,
     {
         "Type": "CallFrequency",
+        "Name": "CallFrequencyUserStats_Rule",
+        "Endpoint": "userstats.xboxlive.com",
+        "Properties":
+        {
+            "SustainedCallPeriod": "300",
+            "SustainedCallLimit": "300",
+            "BurstCallPeriod": "15",
+            "BurstCallLimit": "100"
+        }
+    }
+    ,
+    {
+        "Type": "CallFrequency",
+        "Name": "CallFrequencyStatsRead_Rule",
+        "Endpoint": "statsread.xboxlive.com",
+        "Properties":
+        {
+            "SustainedCallPeriod": "300",
+            "SustainedCallLimit": "300",
+            "BurstCallPeriod": "15",
+            "BurstCallLimit": "100"
+        }
+    }
+    ,
+    {
+        "Type": "CallFrequency",
         "Name": "CallFrequencyGeneral_Rule",
         "Endpoint": "*",
         "Properties":
