@@ -197,51 +197,59 @@ namespace XboxLiveTrace
                     continue;
                 }
 
-                JObject requestBodyJson;
+                var eventArray = requestBody.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
-                try
+                foreach (var eventLine in eventArray)
                 {
-                    requestBodyJson = JObject.Parse(requestBody);
-                }
-                catch
-                {
-                    continue;
-                }
+                    JObject requestBodyJson;
 
-                var eventName = requestBodyJson["name"].ToString();
-
-                if (eventNameMatch1.IsMatch(eventName) || eventNameMatch2.StartsWith(eventName))
-                {
-                    var serviceCall = eventCall.Copy();
-                    var eventNameParts = eventName.Split('.');
-
-
-                    serviceCall.m_host = "inGameEvents";
-                    serviceCall.m_eventName = eventNameParts.Last();
-                    serviceCall.m_reqTimeUTC = (UInt64)DateTime.Parse(requestBodyJson["time"].ToString()).ToFileTimeUtc();
-                    serviceCall.m_reqBody = String.Empty;
-
-                    var data = requestBodyJson.GetValue("data") as JObject;
-                    if (data != null)
+                    try
                     {
-                        var baseData = data.GetValue("baseData") as JObject;
-
-                        if(baseData != null)
-                        {
-                            var measurements = baseData["measurements"];
-                            serviceCall.m_measurements = measurements != null ? measurements.ToString() : String.Empty;
-
-                            var properties = baseData["properties"];
-                            serviceCall.m_measurements = properties != null ? properties.ToString() : String.Empty;
-                            if (serviceCall.m_eventName.Contains("MultiplayerRoundStart") || serviceCall.m_eventName.Contains("MultiplayerRoundEnd"))
-                            {
-                                serviceCall.m_playerSessionId = baseData["playerSession"].ToString();
-                                serviceCall.m_multiplayerCorrelationId = properties["MultiplayerCorrelationId"].ToString();
-                            }
-                        }
+                        requestBodyJson = JObject.Parse(eventLine);
+                    }
+                    catch
+                    {
+                        continue;
                     }
 
-                    inGameEvents.AddLast(serviceCall);
+                    var eventName = requestBodyJson["name"].ToString();
+
+                    if (eventNameMatch1.IsMatch(eventName) || eventNameMatch2.StartsWith(eventName))
+                    {
+                        var serviceCall = eventCall.Copy();
+                        var eventNameParts = eventName.Split('.');
+
+
+                        serviceCall.m_host = "inGameEvents";
+                        serviceCall.m_eventName = eventNameParts.Last();
+                        serviceCall.m_reqTimeUTC =
+                            (UInt64) DateTime.Parse(requestBodyJson["time"].ToString()).ToFileTimeUtc();
+                        serviceCall.m_reqBody = String.Empty;
+
+                        var data = requestBodyJson.GetValue("data") as JObject;
+                        if (data != null)
+                        {
+                            var baseData = data.GetValue("baseData") as JObject;
+
+                            if (baseData != null)
+                            {
+                                var measurements = baseData["measurements"];
+                                serviceCall.m_measurements =
+                                    measurements != null ? measurements.ToString() : String.Empty;
+
+                                var properties = baseData["properties"];
+                                if (serviceCall.m_eventName.Contains("MultiplayerRoundStart") ||
+                                    serviceCall.m_eventName.Contains("MultiplayerRoundEnd"))
+                                {
+                                    serviceCall.m_playerSessionId = baseData["playerSessionId"].ToString();
+                                    serviceCall.m_multiplayerCorrelationId =
+                                        properties["MultiplayerCorrelationId"].ToString();
+                                }
+                            }
+                        }
+
+                        inGameEvents.AddLast(serviceCall);
+                    }
                 }
 
             }
