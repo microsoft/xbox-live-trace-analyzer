@@ -59,7 +59,23 @@ namespace XboxLiveTrace
                 List<ServiceCallItem> throttledCallSet = new List<ServiceCallItem>();
                 throttledCallSet.Add(items.ElementAt(i));
                 var throttledCall = throttledCallSet.First();
-                JObject response = JObject.Parse(throttledCall.m_rspBody);
+                string throttleGuidline = string.Empty;
+
+                try
+                {
+                    if (!string.IsNullOrEmpty(throttledCall.m_rspBody))
+                    {
+                        JObject response = JObject.Parse(throttledCall.m_rspBody);
+                        if (response["maxRequests"] != null && response["periodInSeconds"] != null)
+                        {
+                            throttleGuidline = $"Allowed: {response["maxRequests"]} over {response["periodInSeconds"]} seconds.";
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                }
+                
 
                 // If there are 2 or more throttled calls in a row the title is not properly handling the response
                 while (++i < m_throttledCallsCount)
@@ -80,18 +96,12 @@ namespace XboxLiveTrace
                 // One call is a warning as we expect that they back off after getting the 429 response
                 if(throttledCallSet.Count == 1)
                 {
-                    result.AddViolation(ViolationLevel.Warning,
-                                        String.Format("Throttled call detected on endpoint. Allowed: {0} over {1} seconds.",
-                                                      response["maxRequests"], response["periodInSeconds"]),
-                                                      throttledCall);
+                    result.AddViolation(ViolationLevel.Warning, "Throttled call detected on endpoint. " + throttleGuidline, throttledCall);
                 }
                 // More that one in a row means that the title didn't handle the 429 and we want them to fix that.
                 else
                 {
-                    result.AddViolation(ViolationLevel.Error,
-                                        String.Format("Sequence of throttled calls detected on endpoint. Allowed: {0} over {1} seconds.",
-                                                      response["maxRequests"], response["periodInSeconds"]),
-                                                      throttledCallSet);
+                    result.AddViolation(ViolationLevel.Error, "Sequence of throttled calls detected on endpoint. " + throttleGuidline, throttledCallSet);
                 }
 
                 throttledCallSet.Clear();
