@@ -383,6 +383,12 @@ namespace XboxLiveTrace
                         return null;
                     }
 
+                    // Fiddler Test Frames can cause LTA to break.  This filters out those fames.
+                    if (firstLineSplit[1].Contains("http:///"))
+                    {
+                        return null;
+                    }
+
                     frame.m_isGet = firstLineSplit[0].Equals("GET");
 
                     // Extract the XUID (if any) from the first line of the client side of the frame
