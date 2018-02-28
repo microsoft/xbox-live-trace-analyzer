@@ -384,7 +384,7 @@ namespace XboxLiveTrace
                     }
 
                     // Fiddler Test Frames can cause LTA to break.  This filters out those fames.
-                    if (firstLineSplit[1].Contains("http:///"))
+                    if (firstLineSplit[1].StartsWith("http:///", true, null))
                     {
                         return null;
                     }
