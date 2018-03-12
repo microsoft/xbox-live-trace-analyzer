@@ -67,6 +67,9 @@ namespace XboxLiveTrace
             Regex dotReplace = new Regex("\\.");
             uri = dotReplace.Replace(uri, "\\.");
 
+            Regex questionReplace = new Regex("\\?");
+            uri = questionReplace.Replace(uri, "\\?");
+
             Regex optionalReplace = new Regex("\\[.*?\\]");
             uri = optionalReplace.Replace(uri, ".*");
 

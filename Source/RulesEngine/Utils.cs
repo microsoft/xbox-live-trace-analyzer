@@ -8,6 +8,7 @@ using System.Text;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Net;
 
 namespace XboxLiveTrace
 {
@@ -99,13 +100,13 @@ namespace XboxLiveTrace
             return int.Parse(number);
         }
 
-        public static bool IsAnalyzedService(ServiceCallItem frame, String customUserAgent)
+        public static bool IsAnalyzedService(WebHeaderCollection headers, String customUserAgent)
         {
-            return (frame.m_reqHeader.Contains("x-xbl-api-build-version:") && !frame.m_reqHeader.Contains("x-xbl-api-build-version: adk"))
-                 || (frame.m_reqHeader.Contains("User-Agent: XboxServicesAPI") && !frame.m_reqHeader.Contains("x-xbl-client-name"))
-                 || frame.m_reqHeader.Contains("X-XBL-Build-Version")  // XCE CS1.0 event
-                 || frame.m_reqHeader.Contains("X-AuthXToken")   // UTC upload CS2.1 events
-                 || (!String.IsNullOrEmpty(customUserAgent) && frame.m_reqHeader.Contains($"User-Agent: {customUserAgent}"));
+            return ((headers["x-xbl-api-build-version"] != null && headers["x-xbl-api-build-version"].Equals("adk", StringComparison.OrdinalIgnoreCase))
+                || (headers["User-Agent"]!= null && headers["User-Agent"].StartsWith("XboxServicesAPI") && headers["x-xbl-client-name"] == null)
+                || headers["X-XBL-Build-Version"] != null  // XCE CS1.0 event
+                || headers["X-AuthXToken"] != null  // UTC upload CS2.1 events
+                || (!String.IsNullOrEmpty(customUserAgent) && headers["User-Agent"] == customUserAgent));
         }
 
         public static String GeneratePathToFile(String file)

@@ -7,6 +7,8 @@ using Newtonsoft.Json;
 using System.IO;
 using System.IO.Compression;
 using System.Xml;
+using System.Net;
+using System.Linq;
 
 namespace XboxLiveTrace
 {
@@ -48,9 +50,9 @@ namespace XboxLiveTrace
         public UInt64 m_changeNumber;
 
         public bool m_isGet;
+        public string m_method;
         public bool m_isShoulderTap;
         public bool m_isInGameEvent;
-
 
         public ServiceCallItem()
         {
@@ -74,69 +76,6 @@ namespace XboxLiveTrace
             m_isGet = false;
             m_isShoulderTap = false;
             m_isInGameEvent = false;
-        }
-
-        private void ParseJSON()
-        {
-            StringBuilder stringBuilder = new StringBuilder();
-            StringWriter stringWriter = new StringWriter(stringBuilder);
-            JsonWriter jsonWriter = new JsonTextWriter(stringWriter);
-            jsonWriter.Formatting = Newtonsoft.Json.Formatting.Indented;
-
-            jsonWriter.WriteStartObject();
-            UInt64 reqTimeSinceTrackingStartMs = (m_reqTimeUTC - m_startTimeUTC) / TimeSpan.TicksPerMillisecond;
-            //write out all of the service call properties
-            jsonWriter.WritePropertyName("Host"); jsonWriter.WriteValue(m_host);
-            jsonWriter.WritePropertyName("Id"); jsonWriter.WriteValue(m_id);
-            jsonWriter.WritePropertyName("XboxUserId"); jsonWriter.WriteValue(m_xboxUserId);
-            jsonWriter.WritePropertyName("BreadCrumb"); jsonWriter.WriteValue(m_breadCrumb);
-            jsonWriter.WritePropertyName("StartTimeUTC"); jsonWriter.WriteValue(m_startTimeUTC);
-            jsonWriter.WritePropertyName("ReqTimeUTC"); jsonWriter.WriteValue(m_reqTimeUTC);
-            jsonWriter.WritePropertyName("ReqTimeSinceTrackingStartMs"); jsonWriter.WriteValue(reqTimeSinceTrackingStartMs);
-            if (m_isShoulderTap)
-            {
-                jsonWriter.WritePropertyName("IsShoulderTap"); jsonWriter.WriteValue(m_isShoulderTap);
-                jsonWriter.WritePropertyName("SessionReferenceUriPath"); jsonWriter.WriteValue(m_sessionReferenceUriPath);
-                jsonWriter.WritePropertyName("Branch"); jsonWriter.WriteValue(m_branch);
-                jsonWriter.WritePropertyName("ChangeNumber"); jsonWriter.WriteValue(m_changeNumber);
-            }
-            else
-            {
-                bool isSuccess = Utils.IsSucessHTTPStatusCode(m_httpStatusCode);
-
-                jsonWriter.WritePropertyName("Uri"); jsonWriter.WriteValue(m_uri);
-                jsonWriter.WritePropertyName("IsGet"); jsonWriter.WriteValue(m_isGet);
-                jsonWriter.WritePropertyName("HttpStatusCode"); jsonWriter.WriteValue(m_httpStatusCode);
-                jsonWriter.WritePropertyName("MultiplayerCorrelationId"); jsonWriter.WriteValue(m_multiplayerCorrelationId);
-                jsonWriter.WritePropertyName("ElapsedCallTimeMs"); jsonWriter.WriteValue(m_elapsedCallTimeMs);
-                jsonWriter.WritePropertyName("RequestHeaders"); jsonWriter.WriteValue(m_reqHeader);
-                jsonWriter.WritePropertyName("RequestBody"); jsonWriter.WriteValue(m_reqBody);
-
-                jsonWriter.WritePropertyName("RequestBodyHashCode"); jsonWriter.WriteValue(m_reqBody.GetHashCode());
-                jsonWriter.WritePropertyName("ResponseBody"); jsonWriter.WriteValue(m_rspBody);
-
-                if (!isSuccess)
-                {
-                    jsonWriter.WritePropertyName("ResponseHeaders"); jsonWriter.WriteValue(m_rspHeader);
-                    jsonWriter.WritePropertyName("FullResponse"); jsonWriter.WriteValue(m_rspFullString);
-                }
-            }
-
-            jsonWriter.WriteEndObject();
-            m_callDataFromJSON = stringBuilder.ToString();
-            stringWriter.Close();
-            jsonWriter.Close();
-            stringWriter = null;
-            jsonWriter = null;
-        }
-
-        public String SerializeJson()
-        {
-            if (m_callDataFromJSON == String.Empty)
-            {
-                ParseJSON();
-            }
-            return m_callDataFromJSON;
         }
 
         public ServiceCallItem Copy()
@@ -170,6 +109,7 @@ namespace XboxLiveTrace
             copy.m_startTimeUTC = m_startTimeUTC;
             copy.m_changeNumber = m_changeNumber;
             copy.m_isGet = m_isGet;
+            copy.m_method = m_method;
             copy.m_isShoulderTap = m_isShoulderTap;
             copy.m_isInGameEvent = m_isInGameEvent;
 
@@ -363,7 +303,7 @@ namespace XboxLiveTrace
             return item;
         }
 
-        public static ServiceCallItem FromFiddlerFrame(UInt32 frameId, ZipArchiveEntry cFileStream, ZipArchiveEntry mFileStream, ZipArchiveEntry sFileStream)
+        public static ServiceCallItem FromFiddlerFrame(UInt32 frameId, ZipArchiveEntry cFileStream, ZipArchiveEntry mFileStream, ZipArchiveEntry sFileStream, Func<WebHeaderCollection, bool> filterCallback)
         {
             ServiceCallItem frame = new ServiceCallItem();
             frame.m_id = frameId;
@@ -390,6 +330,7 @@ namespace XboxLiveTrace
                     }
 
                     frame.m_isGet = firstLineSplit[0].Equals("GET");
+                    frame.m_method = firstLineSplit[0];
 
                     // Extract the XUID (if any) from the first line of the client side of the frame
                     // POST https://userpresence.xboxlive.com/users/xuid(2669321029139235)/devices/current HTTP/1.1	
@@ -400,22 +341,24 @@ namespace XboxLiveTrace
 
                     // Read the Request Headers
                     fileLine = cFile.ReadLine();
-                    frame.m_reqHeader = String.Empty;
-                    while (String.IsNullOrEmpty(fileLine) == false)
+                    var reqHeaders = new WebHeaderCollection();
+                    while (String.IsNullOrWhiteSpace(fileLine) == false)
                     {
-                        frame.m_reqHeader += (fileLine + "\r\n");
+                        reqHeaders.Add(fileLine);
                         fileLine = cFile.ReadLine();
                     }
 
-                    var index = frame.m_reqHeader.IndexOf("Host:");
-                    index += 6;
+                    // Filter calls with headers
+                    if (filterCallback!= null && !filterCallback(reqHeaders))
+                    {
+                        return null;
+                    }
 
-                    var endIndex = frame.m_reqHeader.IndexOf("\r\n", index);
-
-                    frame.m_host = frame.m_reqHeader.Substring(index, endIndex - index);
+                    frame.m_host = reqHeaders["Host"];
 
                     // Read the Request Body
-                    if (frame.m_reqHeader.Contains("Content-Encoding: deflate"))
+                    string contentEncoding = reqHeaders["Content-Encoding"];
+                    if (!string.IsNullOrWhiteSpace(contentEncoding) && contentEncoding.Equals("deflate", StringComparison.OrdinalIgnoreCase))
                     {
                         using (var memory = Utils.InflateData(cFile.ReadToEnd()))
                         {
@@ -429,6 +372,8 @@ namespace XboxLiveTrace
                     {
                         fileLine = Encoding.ASCII.GetString(cFile.ReadToEnd());
                     }
+
+                    frame.m_reqHeader = reqHeaders.ToString();
                     frame.m_reqBody = fileLine;
                     frame.m_reqBodyHash = (UInt64)frame.m_reqBody.GetHashCode();
                 }
@@ -475,16 +420,17 @@ namespace XboxLiveTrace
                     }
 
                     // Read the Response Headers
+                    var headers = new WebHeaderCollection();
                     fileLine = sFile.ReadLine();
-                    frame.m_rspHeader = String.Empty;
-                    while (String.IsNullOrEmpty(fileLine) == false)
+                    while (!String.IsNullOrWhiteSpace(fileLine))
                     {
-                        frame.m_rspHeader += (fileLine + "\r\n");
+                        headers.Add(fileLine);
                         fileLine = sFile.ReadLine();
                     }
 
                     // Read the Response Body
-                    if (frame.m_rspHeader.Contains("Content-Encoding: deflate"))
+                    string contentEncoding = headers["Content-Encoding"];
+                    if (!string.IsNullOrWhiteSpace(contentEncoding) && contentEncoding.Equals("deflate", StringComparison.OrdinalIgnoreCase))
                     {
                         using (var memory = Utils.InflateData(sFile.ReadToEnd()))
                         {
@@ -498,6 +444,8 @@ namespace XboxLiveTrace
                     {
                         fileLine = Encoding.ASCII.GetString(sFile.ReadToEnd());
                     }
+
+                    frame.m_rspHeader = headers.ToString();
 
                     // Read the Response Body
                     frame.m_rspBody = fileLine;

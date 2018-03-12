@@ -76,12 +76,12 @@ namespace XboxLiveTrace
                 // This first section reports on violations which are from batch calls made with not enough XUIDs in the request body
                 foreach (ServiceCallItem thisItem in items)
                 {
-                    Match match = Regex.Match(thisItem.m_uri, pattern.Key.ToString());
+                    Match match = Regex.Match(thisItem.m_uri, pattern.Key);
                     if (match.Success)
                     {
                         patternInstancesFound++;
                         JObject requestBodyJSON = JObject.Parse(thisItem.m_reqBody);
-                        var values = requestBodyJSON[pattern.Value.ToString()] as JArray;
+                        var values = requestBodyJSON.SelectToken(pattern.Value) as JArray;
                         if ( values != null ) 
                         {
                             matchesFoundDict.Add(thisItem, values.Count);
