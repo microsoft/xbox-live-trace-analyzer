@@ -280,6 +280,11 @@
                 "BatchURI": "/serviceconfigs/[\\w]+/sessiontemplates/[\\w]+/batch",
                 "XUIDListClass": "xuids"
             }
+            ,
+            {
+                "BatchURI": "/handles/query\\?include=relatedInfo,customProperties",
+                "XUIDListClass": "owners.xuids"
+            }
             ]
         }
     }
@@ -374,6 +379,11 @@
             {
                 "BatchURI": "/serviceconfigs/[\\w]+/sessiontemplates/[\\w]+/batch",
                 "XUIDListClass": "xuids"
+            }
+            ,
+            {
+                "BatchURI": "/handles/query\\?include=relatedInfo,customProperties",
+                "XUIDListClass": "owners.xuids"
             }
             ]
         }

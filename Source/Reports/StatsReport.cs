@@ -28,6 +28,11 @@ namespace XboxLiveTrace
             foreach (var endpointStats in stats)
             {
                 var stat = endpointStats.Results["Stats"] as ServiceCallStats;
+                if (stat.m_numCalls == 0)
+                {
+                    continue;
+                }
+
                 JObject host = new JObject();
                 host["Uri"] = endpointStats.Endpoint;
 

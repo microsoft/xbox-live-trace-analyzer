@@ -122,10 +122,10 @@ namespace XboxLiveTrace
 
                 ServiceCallItem frame = null;
 
-                frame = ServiceCallItem.FromFiddlerFrame((UInt32)group.Frame, cFileArchive, mFileArchive, sFileArchive);
+                frame = ServiceCallItem.FromFiddlerFrame((UInt32)group.Frame, cFileArchive, mFileArchive, sFileArchive, o => m_allEndpoints || Utils.IsAnalyzedService(o, customAgent));
 
                 // If this is not an Xbox Service Endpoint that we are checking, then move along.
-                if (frame == null || (!Utils.IsAnalyzedService(frame, customAgent) && m_allEndpoints == false))
+                if (frame == null)
                 {
                     continue;
                 }
@@ -157,7 +157,10 @@ namespace XboxLiveTrace
                     ConvertCS2ToEvent(consoleData.m_servicesHistory);
                 }
 
-                foreach(var endpoint in consoleData.m_servicesHistory)
+                // clear empty items
+                consoleData.m_servicesHistory = consoleData.m_servicesHistory.Where( o => o.Value.Count > 0).ToDictionary(x => x.Key, x => x.Value);
+
+                foreach (var endpoint in consoleData.m_servicesHistory)
                 {
                     consoleData.m_servicesStats.Add(endpoint.Key, new ServiceCallStats(endpoint.Value));
                 }

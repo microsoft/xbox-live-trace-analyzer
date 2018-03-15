@@ -285,8 +285,6 @@ namespace XboxLiveTrace
                         Directory.CreateDirectory(consolePath);
                     }
 
-                    //Parallel.ForEach(m_reports, report => report.RunReport(consolePath, m_rulesEngine.GetResults(console.Key), m_data.m_endpointToService, m_IsLatestBinary, m_latestBinaryVersion));
-
                     m_reports.ForEach(report => report.RunReport(consolePath, m_rulesEngine.GetResults(console.Key), m_data.m_endpointToService, m_IsLatestBinary, m_latestBinaryVersion));
                 }
             }

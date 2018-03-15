@@ -702,9 +702,9 @@ CertWarningPage.prototype = {
 
 		    var detailDiv = $("<div>").addClass("rule-detail-container");
 
-		    var warningRequirement = $("<span>").html("<b>Requirement:</b> " + warning.requirement + "<br />");
-		    var warningRemark = $("<span>").html("<b>Remark:</b> " + warning.remark + "<br />");
-		    var warningIntent = $("<span>").html("<b>Intent:</b> " + warning.intent);
+		    var warningRequirement = $("<span>").html("<b>Requirement:</b> " + warning.Requirement + "<br />");
+		    var warningRemark = $("<span>").html("<b>Remark:</b> " + warning.Remark + "<br />");
+		    var warningIntent = $("<span>").html("<b>Intent:</b> " + warning.Intent);
 
 		    var expanderProperties = {
 		        expanded: false,
