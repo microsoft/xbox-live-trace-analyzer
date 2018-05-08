@@ -22,7 +22,6 @@ namespace XboxLiveTrace
         public UInt32 m_endpointSustainedViolations = 0;
         public UInt32 m_endpointBurstViolations = 0;
 
-
         public CallFrequencyRule() : base(Constants.CallFrequency)
         {
         }
@@ -32,46 +31,34 @@ namespace XboxLiveTrace
         {
             RuleResult result = InitializeResult(DisplayName, Description);
 
-            StringBuilder description = new StringBuilder();
-
             m_stats = stats;
             m_endpointSustainedViolations = 0;
             m_endpointBurstViolations = 0;
 
             // Look through items to determine where excess calls occurred
-            var sustainedExcessCallsPerWindow = Utils.GetExcessCallsForTimeWindow(items, m_sustainedTimePeriodSeconds * 1000, (UInt32)(m_sustainedCallLimit * .9));
-            var burstExcessCallsPerWindow = Utils.GetExcessCallsForTimeWindow(items, m_burstTimePeriodSeconds * 1000, (UInt32)(m_burstCallLimit * .9));
+            var sustainedExcessCallsPerWindow = Utils.GetExcessCallsForTimeWindow(items, m_sustainedTimePeriodSeconds * 1000, m_sustainedCallLimit);
+            var burstExcessCallsPerWindow = Utils.GetExcessCallsForTimeWindow(items, m_burstTimePeriodSeconds * 1000, m_burstCallLimit);
 
             foreach (var excessCalls in sustainedExcessCallsPerWindow)
             {
-                description.Clear();
-                if (excessCalls.Count < m_sustainedCallLimit)
+                if (excessCalls.Count >= m_sustainedCallLimit * 10)
                 {
-                    description.AppendFormat("Call frequency nearing the sustained call limit of {0} with {1} calls to endpoint.", m_sustainedCallLimit, excessCalls.Count);
-                    result.AddViolation(ViolationLevel.Warning, description.ToString(), excessCalls);
+                    var desc = $"Exceeding service rate limits required for title certification ({m_sustainedCallLimit} calls in {excessCalls} seconds).  Failure to adhere to the specified limits may block a title from release, and in-production issues with released titles may result in service suspension up to and including title removal.";
+                    result.AddViolation(ViolationLevel.Error, desc, excessCalls);
                 }
                 else
                 {
-                    m_endpointSustainedViolations++;
-                    description.AppendFormat("Call frequency above the sustained call limit of {0} with {1} calls to endpoint.", m_sustainedCallLimit, excessCalls.Count);
-                    result.AddViolation(ViolationLevel.Error, description.ToString(), excessCalls);
+                    var desc = $"Call frequency above the sustained call limit of {m_sustainedCallLimit} with {excessCalls.Count} calls to endpoint.";
+                    result.AddViolation(ViolationLevel.Warning, desc, excessCalls);
                 }
+                m_endpointSustainedViolations++;
             }
 
             foreach (var excessCalls in burstExcessCallsPerWindow)
             {
-                description.Clear();
-                if (excessCalls.Count < m_burstCallLimit)
-                {
-                    description.AppendFormat("Call frequency nearing the burst call limit of {0} with {1} calls to endpoint.", m_burstCallLimit, excessCalls.Count);
-                    result.AddViolation(ViolationLevel.Warning, description.ToString(), excessCalls);
-                }
-                else
-                {
-                    m_endpointBurstViolations++;
-                    description.AppendFormat("Call frequency above the burst call limit of {0} with {1} calls to endpoint.", m_burstCallLimit, excessCalls.Count);
-                    result.AddViolation(ViolationLevel.Error, description.ToString(), excessCalls);
-                }
+                var desc = $"Call frequency above the burst call limit of {m_burstCallLimit} with {excessCalls.Count} calls to endpoint.";
+                result.AddViolation(ViolationLevel.Warning, desc, excessCalls);
+                m_endpointBurstViolations++;
             }
 
             // The following is information that would only be useful for internal purposes. 
