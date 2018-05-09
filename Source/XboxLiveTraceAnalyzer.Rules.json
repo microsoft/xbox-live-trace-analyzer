@@ -60,7 +60,7 @@
         "Properties":
         {
             "SustainedCallPeriod": "300",
-            "SustainedCallLimit": "100",
+            "SustainedCallLimit": "300",
             "BurstCallPeriod": "15",
             "BurstCallLimit": "100"  
         }
@@ -112,7 +112,7 @@
         "Properties":
         {
             "SustainedCallPeriod": "300",
-            "SustainedCallLimit": "100",
+            "SustainedCallLimit": "300",
             "BurstCallPeriod": "15",
             "BurstCallLimit": "30"  
         }
