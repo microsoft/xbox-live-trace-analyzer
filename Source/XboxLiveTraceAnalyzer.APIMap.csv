@@ -1,2 +1,1 @@
 "test","test","test" 
-"GET https://eds.xboxlive.com/browse/?fields=all[&id={parentId}&mediaItemType={titleType}]&relationship={relationship}[&orderBy={sort}&desiredMediaItemTypes={desiredTypes}&maxItems={count}&skipItems={skip}]","catalog_service::browse_catalog_bundles","CatalogService::BrowseCatalogBundles"  
