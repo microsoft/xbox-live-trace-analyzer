@@ -39,4 +39,4 @@
 "GET https://leaderboards.xboxlive.com/users/xuid({xuid})/scids/{scid}/stats/{statname}/people/{all|favorites}[?sort=descending|ascending&]skipToRank={skipToUser}","leaderboard_service::get_leaderboard_for_social_group_skip_to_rank","LeaderboardService::GetLeaderboardForSocialGroupSkipToRank"
 "GET https://leaderboards.xboxlive.com/users/xuid({xuid})/scids/{scid}/stats/{statname}/people/{all|favorites}[?sort=descending|ascending&]skipToUser={skipToUser}","leaderboard_service::get_leaderboard_for_social_group_skip_to_xuid","LeaderboardService::GetLeaderboardForSocialGroupSkipToXuid"
 "eds.xboxlive.com","catalog_service","CatalogService"
-"GET https://eds.xboxlive.com/browse/?fields=all[&id={parentId}&mediaItemType={titleType}][&orderBy={sort}&desiredMediaItemTypes={desiredTypes}&maxItems={count}&skipItems={skip}]","catalog_service::browse_catalog","CatalogService::BrowseCatalog" 
+
