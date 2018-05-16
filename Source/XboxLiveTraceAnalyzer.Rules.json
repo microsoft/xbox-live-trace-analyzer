@@ -10,7 +10,20 @@
             "SustainedCallPeriod": "300",
             "SustainedCallLimit": "30",
             "BurstCallPeriod": "15",
-            "BurstCallLimit": "10"  
+            "BurstCallLimit": "10"
+        }
+    }
+    ,
+    {
+        "Type": "CallFrequency",
+        "Name": "CallFrequencyClubHub_Rule",
+        "Endpoint": "clubhub.xboxlive.com",
+        "Properties": 
+        {
+          "SustainedCallPeriod": "300",
+          "SustainedCallLimit": "30",
+          "BurstCallPeriod": "15",
+          "BurstCallLimit": "10"
         }
     }
     ,
