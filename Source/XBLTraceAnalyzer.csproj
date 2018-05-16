@@ -112,6 +112,9 @@
     <EmbeddedResource Include="XboxLiveTraceAnalyzer.APIMap.csv" />
     <EmbeddedResource Include="html-report.zip" />
     <None Include="packages.config" />
+    <None Include="XboxLiveTraceAnalyzer-ReadMe.docx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
