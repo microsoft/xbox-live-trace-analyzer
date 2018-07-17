@@ -29,7 +29,7 @@ namespace XboxLiveTrace
             m_json = json;
         }
 
-        public void RunReport(String outputDirectory, IEnumerable<RuleResult> result, Dictionary<string, Tuple<string, string>> endpoints, bool upToDate, string latestVersion)
+        public void RunReport(String outputDirectory, IEnumerable<RuleResult> result, Dictionary<string, Tuple<string, string>> endpoints)
         {
             List<CertWarning> warningResults = new List<CertWarning>();
 
