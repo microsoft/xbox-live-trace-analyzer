@@ -101,7 +101,7 @@ namespace XboxLiveTrace
                 // More that one in a row means that the title didn't handle the 429 and we want them to fix that.
                 else
                 {
-                    result.AddViolation(ViolationLevel.Error, "Sequence of throttled calls detected on endpoint. " + throttleGuidline, throttledCallSet);
+                    result.AddViolation(ViolationLevel.Warning, "Sequence of throttled calls detected on endpoint. " + throttleGuidline, throttledCallSet);
                 }
 
                 throttledCallSet.Clear();

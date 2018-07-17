@@ -92,7 +92,6 @@
     <Compile Include="RulesEngine\TraceAnalyzer.cs" />
     <Compile Include="RulesEngine\UriConverter.cs" />
     <Compile Include="RulesEngine\Utils.cs" />
-    <Compile Include="RulesEngine\VersionInfo.cs" />
     <Compile Include="Rules\BatchFrequencyRule.cs" />
     <Compile Include="Rules\BurstDetectionRule.cs" />
     <Compile Include="Rules\CallFrequencyRule.cs" />

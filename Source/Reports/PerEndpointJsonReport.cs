@@ -28,7 +28,7 @@ namespace XboxLiveTrace
             m_json = json;
         }
 
-        public void RunReport(String outputDirectory, IEnumerable<RuleResult> result, Dictionary<String, Tuple<String, String>> endpoints, bool upToDate, string version)
+        public void RunReport(String outputDirectory, IEnumerable<RuleResult> result, Dictionary<String, Tuple<String, String>> endpoints)
         {
             var endpointRules = result.GroupBy(r => r.Endpoint);
 
@@ -42,8 +42,7 @@ namespace XboxLiveTrace
 
             data["Results"] = results;
 
-            data["LTAVersion"] = version;
-            data["Current"] = upToDate;
+            data["LTAVersion"] = TraceAnalyzer.CurrentVersion;
 
             GenerateMetaData(ref data, "Results");
 

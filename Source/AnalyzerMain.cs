@@ -28,11 +28,6 @@ namespace XboxLiveTrace
         public static bool m_jsonOnly = false;
         public static bool m_defaults = true;
         public static List<String> m_reports = new List<String>();
-#if DEBUG
-        public static bool m_onlineChecks = false; // For developement we don't want to check the versions by default
-#else
-        public static bool m_onlineChecks = true; 
-#endif
 
         static void OutputHelp()
         {
@@ -44,7 +39,6 @@ namespace XboxLiveTrace
             Console.WriteLine("-data:\t\tSpecifies the path to the data file in JSON, CSV, or SAZ format.");
             Console.WriteLine("-rules:\tLoads a custom rules definition.");
             Console.WriteLine("-outputdir:\tSpecifies the directory to print reports to. Default: '.\\'");
-            Console.WriteLine("-offline:\tDoes not do a version check. Default behavior is to check each run.");
             Console.WriteLine("-json:\tOutputs only the json report, not the full html report.");
             Console.WriteLine("-reports:\tA comma separated list of the types of reports you want generated. Use \"default\" for the standard LTA reports.");
             Console.WriteLine("-customUserAgent:\tSpecify the User Agent used when making call to your own services to enable analysis on non-XSAPI calls.");
@@ -128,10 +122,6 @@ namespace XboxLiveTrace
                 {
                     m_isInternal = true;
                 }
-                else if (args[i] == "-offline")
-                {
-                    m_onlineChecks = false;
-                }
                 else if(args[i] == "-json")
                 {
                     m_jsonOnly = true;
@@ -202,7 +192,7 @@ namespace XboxLiveTrace
                 return;
             }
 
-            XboxLiveTrace.TraceAnalyzer analyzer = new TraceAnalyzer(m_isInternal, m_allEndpoints, m_onlineChecks);
+            XboxLiveTrace.TraceAnalyzer analyzer = new TraceAnalyzer(m_isInternal, m_allEndpoints);
 
             try
             {

@@ -3,6 +3,7 @@
 // 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,13 +22,6 @@ namespace XboxLiveTrace
         ServiceCallData m_data;
         RulesEngine m_rulesEngine;
 
-        bool m_online;
-        bool m_IsLatestBinary = true;
-        bool m_IsLatestRules = true;
-        String m_latestBinaryVersion = String.Empty;
-        String m_latestRuleVersion = String.Empty;
-        String m_ruleVersion = String.Empty;
-
         public String OutputDirectory { get; set; }
         public IEnumerable<String> ConsoleList
         {
@@ -39,20 +33,10 @@ namespace XboxLiveTrace
 
         public String CustomUserAgent { get; set; }
 
-        public TraceAnalyzer(bool isInternal, bool allEndpoints, bool online)
+        public TraceAnalyzer(bool isInternal, bool allEndpoints)
         {
             m_data = new ServiceCallData(allEndpoints);
             m_rulesEngine = new RulesEngine(isInternal);
-            m_online = online;
-
-            if (online)
-            {
-                GetLatestVersionNumbers();
-            }
-            else
-            {
-                m_latestBinaryVersion = VersionInfo.Version;
-            }
         }
 
         public void LoadData(String dataFilePath)
@@ -112,12 +96,6 @@ namespace XboxLiveTrace
                 
                 JObject jsonObject = JObject.Load(reader);
                 JToken parseToken;
-
-                // Read the version string
-                if (jsonObject.TryGetValue("Version", out parseToken) == true)
-                {
-                    m_ruleVersion = parseToken.ToString();
-                }
 
                 // Parse the rules from the data
                 if (jsonObject.TryGetValue("Rules", out parseToken) == true)
@@ -262,7 +240,7 @@ namespace XboxLiveTrace
 
                 m_rulesEngine.RunRulesOnData(console.Key, console.Value);
 
-                Parallel.ForEach(m_reports, report => report.RunReport(OutputDirectory, m_rulesEngine.GetResults(console.Key), m_data.m_endpointToService, m_IsLatestBinary, m_latestBinaryVersion));
+                Parallel.ForEach(m_reports, report => report.RunReport(OutputDirectory, m_rulesEngine.GetResults(console.Key), m_data.m_endpointToService));
             }
             else
             {
@@ -285,7 +263,7 @@ namespace XboxLiveTrace
                         Directory.CreateDirectory(consolePath);
                     }
 
-                    m_reports.ForEach(report => report.RunReport(consolePath, m_rulesEngine.GetResults(console.Key), m_data.m_endpointToService, m_IsLatestBinary, m_latestBinaryVersion));
+                    m_reports.ForEach(report => report.RunReport(consolePath, m_rulesEngine.GetResults(console.Key), m_data.m_endpointToService));
                 }
             }
         }
@@ -312,16 +290,6 @@ namespace XboxLiveTrace
             
         }
 
-        public void GetLatestVersionNumbers()
-        {        
-            m_latestBinaryVersion = VersionInfo.Version;
-
-            var localVersion = Version.Parse(VersionInfo.Version);
-            var currentVersion = Version.Parse(m_latestBinaryVersion);
-
-            m_IsLatestBinary = localVersion >= currentVersion;
-        }
-
         public void LoadPlugins(String pluginDir)
         {
             var pluginDirectory = System.IO.Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), pluginDir);
@@ -334,15 +302,13 @@ namespace XboxLiveTrace
             }
         }
 
-        public bool CheckRulesVersion(String rulesVersion)
-        {
-            m_IsLatestRules = (m_latestRuleVersion == rulesVersion);
-            return m_IsLatestRules;
-        }
-
         public static String CurrentVersion
         {
-            get { return VersionInfo.Version; }
+            get
+            {
+                var assembly = Assembly.GetExecutingAssembly();
+                return FileVersionInfo.GetVersionInfo(assembly.Location).FileVersion;
+            }
         }
     }
 }
