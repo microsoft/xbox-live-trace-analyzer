@@ -43,6 +43,7 @@ namespace XboxLiveTrace
             data["Results"] = results;
 
             data["LTAVersion"] = TraceAnalyzer.CurrentVersion;
+            data["Current"] = true;
 
             GenerateMetaData(ref data, "Results");
 
