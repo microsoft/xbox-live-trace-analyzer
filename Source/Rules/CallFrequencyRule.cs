@@ -43,12 +43,12 @@ namespace XboxLiveTrace
             {
                 if (excessCalls.Count >= m_sustainedCallLimit * 10)
                 {
-                    var desc = $"Exceeding service rate limits required for title certification ({m_sustainedCallLimit} calls in {excessCalls} seconds).  Failure to adhere to the specified limits may block a title from release, and in-production issues with released titles may result in service suspension up to and including title removal.";
+                    var desc = $"Exceeding service rate limits required for title certification( limit of {m_sustainedCallLimit * 10} calls with {excessCalls.Count} calls in {m_sustainedTimePeriodSeconds} seconds).  Failure to adhere to the specified limits may block a title from release, and in-production issues with released titles may result in service suspension up to and including title removal.";
                     result.AddViolation(ViolationLevel.Error, desc, excessCalls);
                 }
                 else
                 {
-                    var desc = $"Call frequency above the sustained call limit of {m_sustainedCallLimit} with {excessCalls.Count} calls to endpoint.";
+                    var desc = $"Call frequency above the sustained call limit of {m_sustainedCallLimit} with {excessCalls.Count} calls in {m_sustainedTimePeriodSeconds} seconds to endpoint.";
                     result.AddViolation(ViolationLevel.Warning, desc, excessCalls);
                 }
                 m_endpointSustainedViolations++;
@@ -56,7 +56,7 @@ namespace XboxLiveTrace
 
             foreach (var excessCalls in burstExcessCallsPerWindow)
             {
-                var desc = $"Call frequency above the burst call limit of {m_burstCallLimit} with {excessCalls.Count} calls to endpoint.";
+                var desc = $"Call frequency above the burst call limit of {m_burstCallLimit} with {excessCalls.Count} calls {m_burstTimePeriodSeconds} seconds to endpoint.";
                 result.AddViolation(ViolationLevel.Warning, desc, excessCalls);
                 m_endpointBurstViolations++;
             }
