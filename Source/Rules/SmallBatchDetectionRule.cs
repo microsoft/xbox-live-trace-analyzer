@@ -80,18 +80,25 @@ namespace XboxLiveTrace
                     if (match.Success)
                     {
                         patternInstancesFound++;
-                        JObject requestBodyJSON = JObject.Parse(thisItem.m_reqBody);
-                        var values = requestBodyJSON.SelectToken(pattern.Value) as JArray;
-                        if ( values != null ) 
+                        try
                         {
-                            matchesFoundDict.Add(thisItem, values.Count);
-                            if(values.Count <= m_minBatchXUIDsPerBatchCall)
+                            JObject requestBodyJSON = JObject.Parse(thisItem.m_reqBody);
+                            var values = requestBodyJSON.SelectToken(pattern.Value) as JArray;
+                            if (values != null)
                             {
-                                lowXUIDInstancesFound++;
-                                description.Clear();
-                                description.AppendFormat("Batch call detected for endpoint for a small sized set of {0} XUIDs.", values.Count);
-                                result.AddViolation(ViolationLevel.Warning, description.ToString(), thisItem);
+                                matchesFoundDict.Add(thisItem, values.Count);
+                                if (values.Count <= m_minBatchXUIDsPerBatchCall)
+                                {
+                                    lowXUIDInstancesFound++;
+                                    description.Clear();
+                                    description.AppendFormat("Batch call detected for endpoint for a small sized set of {0} XUIDs.", values.Count);
+                                    result.AddViolation(ViolationLevel.Warning, description.ToString(), thisItem);
+                                }
                             }
+                        }
+                        catch (Exception)
+                        {
+                            // ignored
                         }
                     }
                 }  // finished traversing calls made to endpoint
