@@ -62,11 +62,18 @@ namespace XboxLiveTrace
                     Match match = Regex.Match(thisItem.m_uri, pattern.Key);
                     if (match.Success)
                     {
-                        JObject requestBodyJSON = JObject.Parse(thisItem.m_reqBody);
-                        var values = requestBodyJSON.SelectToken(pattern.Value) as JArray;
-                        if ( values != null ) 
+                        try
                         {
-                            matchesFoundDict.Add(thisItem, values.Count);
+                            JObject requestBodyJSON = JObject.Parse(thisItem.m_reqBody);
+                            var values = requestBodyJSON.SelectToken(pattern.Value) as JArray;
+                            if (values != null)
+                            {
+                                matchesFoundDict.Add(thisItem, values.Count);
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            // ignored
                         }
                     }
                 }  // finished traversing calls made to endpoint
