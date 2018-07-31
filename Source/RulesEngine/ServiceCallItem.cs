@@ -344,7 +344,16 @@ namespace XboxLiveTrace
                     var reqHeaders = new WebHeaderCollection();
                     while (String.IsNullOrWhiteSpace(fileLine) == false)
                     {
-                        reqHeaders.Add(fileLine);
+                        try
+                        {
+                            reqHeaders.Add(fileLine);
+                        }
+                        catch (Exception)
+                        {
+                            // This will throw if a header value contains invalid characters
+                            // Ignore and continue
+                        }
+
                         fileLine = cFile.ReadLine();
                     }
 
