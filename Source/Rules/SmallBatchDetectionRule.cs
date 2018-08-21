@@ -87,7 +87,7 @@ namespace XboxLiveTrace
                             if (values != null)
                             {
                                 matchesFoundDict.Add(thisItem, values.Count);
-                                if (values.Count <= m_minBatchXUIDsPerBatchCall)
+                                if (values.Count < m_minBatchXUIDsPerBatchCall)
                                 {
                                     lowXUIDInstancesFound++;
                                     description.Clear();
