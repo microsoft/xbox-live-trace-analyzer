@@ -224,7 +224,7 @@
         "Endpoint": "profile.xboxlive.com",
         "Properties":
         {
-            "MinBatchXUIDsPerBatchCall": "2",
+            "MinBatchXUIDsPerBatchCall": "1",
             "MatchPatterns": [
             {
                 "BatchURI": "/users/batch/profile/settings",
