@@ -159,6 +159,19 @@
     ,
     {
         "Type": "CallFrequency",
+        "Name": "CallFrequencyStatsWrite_Rule",
+        "Endpoint": "statswrite.xboxlive.com",
+        "Properties":
+        {
+            "SustainedCallPeriod": "300",
+            "SustainedCallLimit": "10",
+            "BurstCallPeriod": "15",
+            "BurstCallLimit": "10"
+        }
+    }
+    ,
+    {
+        "Type": "CallFrequency",
         "Name": "CallFrequencyGeneral_Rule",
         "Endpoint": "*",
         "Properties":
