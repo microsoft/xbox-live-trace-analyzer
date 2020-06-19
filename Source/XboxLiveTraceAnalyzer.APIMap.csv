@@ -109,3 +109,6 @@
 "GET https://tournamentshub.xboxlive.com/tournaments/{organizer}/{id}","tournament_service::get_tournament_details","TournamentService::GetTournamentDetailsAsync"
 "GET https://tournamentshub.xboxlive.com/tournaments/{organizer}/{id}/teams","tournament_service::get_teams","TournamentService::GetTeamsAsync"
 "GET https://tournamentshub.xboxlive.com/tournaments/{organizer}/{id}/teams/{teamId}","tournament_service::get_team_details","TournamentService::GetTeamDetailsAsync"
+"statswrite.xboxlive.com","XblTitleManagedStats*","N/A"
+"POST https://statswrite.xboxlive.com/stats/users/{xuid}/scids/{scid}/","XblTitleManagedStatsWriteAsync","N/A"
+"PATCH https://statswrite.xboxlive.com/stats/users/{xuid}/scids/{scid}/","XblTitleManagedStatsUpdateStatsAsync","N/A"
