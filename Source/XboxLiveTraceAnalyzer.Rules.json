@@ -184,17 +184,17 @@
                 "BurstCallPeriod": "15",
                 "BurstCallLimit": "30"
             }
-			,
-			{
-				"Description": "query MPSD search handles",
-				"Subpaths": [
-					"/handles/query?include=relatedInfo,roleInfo,customProperties"
-				],
-				"SustainedCallPeriod": "300",
+            ,
+            {
+                "Description": "query MPSD search handles",
+                "Subpaths": [
+                    "/handles/query?include=relatedInfo,roleInfo,customProperties"
+                ],
+                "SustainedCallPeriod": "300",
                 "SustainedCallLimit": "20",
                 "BurstCallPeriod": "15",
-                "BurstCallLimit": "1"		
-			}
+                "BurstCallLimit": "1"       
+            }
             ]
         }
     }
