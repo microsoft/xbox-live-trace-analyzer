@@ -15,6 +15,21 @@ namespace XboxLiveTrace
 {
     internal class ServiceCallData
     {   
+        public class DataTelemetry
+        {
+            // How many calls were processed by LTA
+
+            public int m_totalCalls;
+            public int m_callsProcessed;
+            public int m_callsSkipped
+            {
+                get
+                {
+                    return m_totalCalls - m_callsProcessed;
+                }
+            }
+        }
+
         public class PerConsoleData
         {
             public Dictionary<String, LinkedList<ServiceCallItem>> m_servicesHistory = new Dictionary<string, LinkedList<ServiceCallItem>>();
@@ -26,6 +41,8 @@ namespace XboxLiveTrace
         public Dictionary<String, PerConsoleData> m_perConsoleData = new Dictionary<string, PerConsoleData>();
         public Dictionary<String, Tuple<String, String>> m_endpointToService;
 
+        public DataTelemetry m_dataTelemetry = new DataTelemetry();
+
         public ServiceCallData(bool allEndpoints)
         {
             m_allEndpoints = allEndpoints;
@@ -33,6 +50,7 @@ namespace XboxLiveTrace
 
         public void DeserializeJson(String input)
         {
+
             String data = File.ReadAllText(input);
             data = "{\"Data\":" + data + "}";
             XmlDocument doc = JsonConvert.DeserializeXmlNode(data, "Root");
@@ -55,6 +73,9 @@ namespace XboxLiveTrace
                         consoleData.m_servicesHistory.Add(item.m_host, new LinkedList<ServiceCallItem>());
                     }
                     consoleData.m_servicesHistory[item.m_host].AddLast(item);
+
+                    m_dataTelemetry.m_totalCalls++;
+                    m_dataTelemetry.m_callsProcessed++;
                 }
             }
 
@@ -79,6 +100,8 @@ namespace XboxLiveTrace
 
                 while (!data.EndOfStream)
                 {
+                    m_dataTelemetry.m_totalCalls++;
+
                     String row = data.ReadLine();
                     ServiceCallItem item = ServiceCallItem.FromCSV1509(row);
                     item.m_logVersion = version;
@@ -88,6 +111,7 @@ namespace XboxLiveTrace
                         {
                             consoleData.m_servicesHistory.Add(item.m_host, new LinkedList<ServiceCallItem>());
                         }
+                        m_dataTelemetry.m_callsProcessed++;
                         consoleData.m_servicesHistory[item.m_host].AddLast(item);
                     }
                 }
@@ -109,6 +133,7 @@ namespace XboxLiveTrace
                          where e.Name.Contains("_c.txt") || e.Name.Contains("_s.txt") || e.Name.Contains("_m.xml")
                          group e by Utils.GetFrameNumber(e.Name) into g
                          select new { Frame = g.Key, Data = g };
+            m_dataTelemetry.m_totalCalls = result.Count();
 
             List<ServiceCallItem> frameData = new List<ServiceCallItem>();
 
@@ -131,6 +156,7 @@ namespace XboxLiveTrace
                 }
 
                 frameData.Add(frame);
+                m_dataTelemetry.m_callsProcessed++;
             }
 
             var consoleGroups = from f in frameData
