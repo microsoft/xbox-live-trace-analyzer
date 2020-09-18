@@ -58,6 +58,9 @@ namespace XboxLiveTrace
                 default:
                     throw new ArgumentException("Data file \"" + dataFilePath + "\" is not a supported file type.");
             }
+
+            Console.WriteLine($"{ m_data.m_perConsoleData.Keys.Count } console{ (m_data.m_perConsoleData.Keys.Count != 1 ? "s" : "") } and { m_data.m_dataTelemetry.m_totalCalls } call{ (m_data.m_dataTelemetry.m_totalCalls != 1 ? "s" : "") } found in { dataFilePath }.");
+            Console.WriteLine($"{ m_data.m_dataTelemetry.m_callsProcessed } call{ (m_data.m_dataTelemetry.m_callsProcessed != 1 ? "s were" : " was") } analyzed by TraceAnalyzer, { m_data.m_dataTelemetry.m_callsSkipped } call{ (m_data.m_dataTelemetry.m_callsSkipped != 1 ? "s were" : " was") } skipped.");
         }
 
         public bool IsDataContainsEndpoint(string endpoint)
