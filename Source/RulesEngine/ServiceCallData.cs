@@ -137,6 +137,7 @@ namespace XboxLiveTrace
 
             List<ServiceCallItem> frameData = new List<ServiceCallItem>();
 
+            int frameNumber = 1;
             // Process data per frame
             foreach (var group in result)
             {
@@ -147,12 +148,20 @@ namespace XboxLiveTrace
 
                 ServiceCallItem frame = null;
 
+                System.Diagnostics.Debug.WriteLine("Analyzing Frame# " + frameNumber);
+                frameNumber++;
+
                 frame = ServiceCallItem.FromFiddlerFrame((UInt32)group.Frame, cFileArchive, mFileArchive, sFileArchive, o => m_allEndpoints || Utils.IsAnalyzedService(o, customAgent));
 
                 // If this is not an Xbox Service Endpoint that we are checking, then move along.
                 if (frame == null)
                 {
+                    System.Diagnostics.Debug.WriteLine("Skipping\r\n");
                     continue;
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("Processing Call\r\n");
                 }
 
                 frameData.Add(frame);
