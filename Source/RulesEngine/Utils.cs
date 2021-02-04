@@ -102,11 +102,85 @@ namespace XboxLiveTrace
 
         public static bool IsAnalyzedService(WebHeaderCollection headers, String customUserAgent)
         {
-            return ((headers["x-xbl-api-build-version"] != null && headers["x-xbl-api-build-version"].Equals("adk", StringComparison.OrdinalIgnoreCase))
-                || (headers["User-Agent"]!= null && headers["User-Agent"].Contains("XboxServicesAPI") && headers["x-xbl-client-name"] == null)
-                || headers["X-XBL-Build-Version"] != null  // XCE CS1.0 event
-                || headers["X-AuthXToken"] != null  // UTC upload CS2.1 events
-                || (!String.IsNullOrEmpty(customUserAgent) && headers["User-Agent"] == customUserAgent));
+            var result = false;
+            if (headers["x-xbl-api-build-version"] != null && headers["x-xbl-api-build-version"].Equals("adk", StringComparison.OrdinalIgnoreCase))
+            {
+                System.Diagnostics.Debug.WriteLine("header[x-xbl-api-build-version] is adk");
+                result = true;
+            }
+            else
+            {
+                if (headers["x-xbl-api-build-version"] == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("header[x-xbl-api-build-version] is null");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("header[x-xbl-api-build-version] is not adk");
+                }
+            }
+
+            if (headers["User-Agent"] != null && headers["User-Agent"].Contains("XboxServicesAPI") && headers["x-xbl-client-name"] == null)
+            {
+                System.Diagnostics.Debug.WriteLine("header[User-Agent] contains XboxServicesAPI and header[x-xbl-client-name] is null");
+                result = true;
+            }
+            else
+            {
+                if (headers["User-Agent"] == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("header[User-Agent] is null");
+                }
+                else if (!headers["User-Agent"].Contains("XboxServicesAPI"))
+                {
+                    System.Diagnostics.Debug.WriteLine("header[User-Agent] does not contain XboxServicesAPI");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("header[x-xbl-client-name] is not null");
+                }
+            }
+
+            // XCE CS1.0 event
+            if (headers["X-XBL-Build-Version"] != null)
+            {
+                System.Diagnostics.Debug.WriteLine("header[X-XBL-Build-Version] is not null");
+                result = true;
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("header[X-XBL-Build-Version] is null");
+            }
+
+            // UTC upload CS2.1 events
+            if (headers["X-AuthXToken"] != null)
+            {
+                System.Diagnostics.Debug.WriteLine("header[X-AuthXToken] is not null");
+                result = true;
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("header[X-AuthXToken] is null");
+            }
+
+            if (!String.IsNullOrEmpty(customUserAgent) && headers["User-Agent"] == customUserAgent)
+            {
+                System.Diagnostics.Debug.WriteLine("customUserAgent is not null and header[User-Agent] matches.");
+                result = true;
+            }
+            else
+            {
+                if (String.IsNullOrEmpty(customUserAgent))
+                {
+                    System.Diagnostics.Debug.WriteLine("customUserAgent is null or empty");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("header[User-Agent] does not match customUserAgent");
+                }
+            }
+
+            return result;
         }
 
         public static String GeneratePathToFile(String file)

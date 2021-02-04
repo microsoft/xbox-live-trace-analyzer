@@ -305,6 +305,7 @@ namespace XboxLiveTrace
 
         public static ServiceCallItem FromFiddlerFrame(UInt32 frameId, ZipArchiveEntry cFileStream, ZipArchiveEntry mFileStream, ZipArchiveEntry sFileStream, Func<WebHeaderCollection, bool> filterCallback)
         {
+
             ServiceCallItem frame = new ServiceCallItem();
             frame.m_id = frameId;
 
@@ -320,12 +321,14 @@ namespace XboxLiveTrace
                     // CONNECT Frames should not be in the analysis.
                     if (firstLineSplit[0] == "CONNECT")
                     {
+                        System.Diagnostics.Debug.WriteLine("CONNECT Frames should not be in the analysis.");
                         return null;
                     }
 
                     // Fiddler Test Frames can cause LTA to break.  This filters out those fames.
                     if (firstLineSplit[1].StartsWith("http:///", true, null))
                     {
+                        System.Diagnostics.Debug.WriteLine("Fiddler Test Frames should not be in the analysis.");
                         return null;
                     }
 
@@ -357,6 +360,7 @@ namespace XboxLiveTrace
                         fileLine = cFile.ReadLine();
                     }
 
+                    System.Diagnostics.Debug.WriteLine("Analyzing " + frame.m_uri);
                     // Filter calls with headers
                     if (filterCallback!= null && !filterCallback(reqHeaders))
                     {
