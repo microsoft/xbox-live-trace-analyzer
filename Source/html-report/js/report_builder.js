@@ -1,4 +1,4 @@
-API = "WinRT";
+API = "C";
 var rules = ["Call Frequency", "Burst Detection", "Throttled Call Detection", "Small-Batch Detection", "Batch Frequency", "Repeated Calls", "Polling Detection"];
 
 

@@ -26,6 +26,8 @@
 <body>
 <div id="OutOfDate" style="padding:5px; background-color:#990100; width: 100%; text-align: center; color:white;">
 	Xbox Live Trace Analyzer is out of date.  New version available at <a href="http://www.aka.ms/XboxLiveTools">http://www.aka.ms/XboxLiveTools</a></div>
+<div id="Legacy" style="padding:5px; background-color:#990100; width: 100%; text-align: center; color:white;">
+	The C++ and WinRT APIs are for XDK implementations and are considered legacy.</div>
 <div class="atg-container">
 	<h2 class="atg-title" ><img class="xbox-logo" src="./img/Xbox_Logo.png" />Xbox Live Trace Analyzer</h2>
 	<div style="float: right; position: relative; top:-40px;">
@@ -40,7 +42,8 @@
 		<select onchange="changeAPISet(this.options[this.selectedIndex].value)">
 			<option value="Uri">URI</option>
 			<option value="Cpp">C++</option>
-			<option value="WinRT" selected="selected">WinRT</option>
+			<option value="WinRT">WinRT</option>
+			<option value="C" selected="selected">C</option>
 		</select>
 	</div>
 </div>
@@ -52,6 +55,15 @@
 	function changeAPISet (newAPI){
 		if(API != newAPI){
 			API = newAPI;
+			
+			if(API == "Cpp" || API == "WinRT")
+			{
+				$("#Legacy").show();
+			}
+			else
+			{
+				$("#Legacy").hide();
+			}
 			
 			reportPage.changeAPI(API);
 			statsPage.changeAPI(API);
@@ -110,6 +122,8 @@
 		else{
 			$("#OutOfDate").hide();
 		}
+		
+		$("#Legacy").hide();
 
 		if (data.LTAVersion !== undefined) {
 			$("#footerVersion").text(data.LTAVersion);
