@@ -29,8 +29,8 @@ namespace XboxLiveTrace
 
                 var columns = Utils.GetCSVValues(line);
 
-                // Not a value row if there arent 3 columns
-                if(columns.Length != 3)
+                // Not a value row if there arent 4 columns
+                if(columns.Length != 4)
                 {
                     continue;
                 }
@@ -38,8 +38,9 @@ namespace XboxLiveTrace
                 String uri = columns[0];
                 String cppMethod = columns[1];
                 String winrtMethod = columns[2];
+                String cMethod = columns[3];
 
-                var methodTuple = new Tuple<String, String>(cppMethod, winrtMethod);
+                var methodTuple = new Tuple<String, String, String>(cppMethod, winrtMethod, cMethod);
 
                 // If it has a space then its a specific endpoint and not a service
                 if (uri.Contains(" "))
@@ -80,7 +81,7 @@ namespace XboxLiveTrace
             return new Regex(uri);
         }
 
-        public Tuple<String, String> GetService(String service)
+        public Tuple<String, String, String> GetService(String service)
         {
             if(m_services.ContainsKey(service))
             {
@@ -89,17 +90,17 @@ namespace XboxLiveTrace
             return null;
         }
 
-        public Dictionary<String, Tuple<String, String>> GetServices()
+        public Dictionary<String, Tuple<String, String, String>> GetServices()
         {
             return m_services;
         }
 
-        public Tuple<String, String> GetMethod(String uri, bool get)
+        public Tuple<String, String, String> GetMethod(String uri, bool get)
         {
             return FindMatch(get ? m_getMethods : m_nonGetMethods, uri);
         }
 
-        private Tuple<String, String> FindMatch(Dictionary<Regex, Tuple<String,String>> map, String match)
+        private Tuple<String, String, String> FindMatch(Dictionary<Regex, Tuple<String,String, String>> map, String match)
         {
             foreach(var value in map)
             {
@@ -111,8 +112,8 @@ namespace XboxLiveTrace
             return null;
         }
 
-        private Dictionary<String, Tuple<String, String>> m_services = new Dictionary<String, Tuple<String, String>>();
-        private Dictionary<Regex, Tuple<String, String>> m_getMethods = new Dictionary<Regex, Tuple<String, String>>();
-        private Dictionary<Regex, Tuple<String, String>> m_nonGetMethods = new Dictionary<Regex, Tuple<String, String>>();
+        private Dictionary<String, Tuple<String, String, String>> m_services = new Dictionary<String, Tuple<String, String, String>>();
+        private Dictionary<Regex, Tuple<String, String, String>> m_getMethods = new Dictionary<Regex, Tuple<String, String, String>>();
+        private Dictionary<Regex, Tuple<String, String, String>> m_nonGetMethods = new Dictionary<Regex, Tuple<String, String, String>>();
     }
 }

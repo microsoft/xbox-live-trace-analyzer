@@ -39,7 +39,7 @@ namespace XboxLiveTrace
         public static bool m_allEndpoints = false;
 
         public Dictionary<String, PerConsoleData> m_perConsoleData = new Dictionary<string, PerConsoleData>();
-        public Dictionary<String, Tuple<String, String>> m_endpointToService;
+        public Dictionary<String, Tuple<String, String, String>> m_endpointToService;
 
         public DataTelemetry m_dataTelemetry = new DataTelemetry();
 
