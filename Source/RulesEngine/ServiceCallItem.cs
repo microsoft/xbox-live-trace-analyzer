@@ -33,7 +33,7 @@ namespace XboxLiveTrace
         public String m_dimensions;
         public String m_measurements;
         public String m_breadCrumb;
-        public Tuple<String,String> m_xsapiMethods;
+        public Tuple<String,String, String> m_xsapiMethods;
         private String m_callDataFromJSON;
 
         public String m_consoleIP;

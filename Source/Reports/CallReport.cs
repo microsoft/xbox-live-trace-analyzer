@@ -19,7 +19,7 @@ namespace XboxLiveTrace
         {
             m_json = json;
         }
-        public void RunReport(String outputDirectory, IEnumerable<RuleResult> result, Dictionary<string, Tuple<string, string>> endpoints)
+        public void RunReport(String outputDirectory, IEnumerable<RuleResult> result, Dictionary<string, Tuple<string, string, string>> endpoints)
         {
             var calls = result.Where(r => r.RuleName == "CallRecorder");
 
@@ -45,6 +45,7 @@ namespace XboxLiveTrace
                 {
                     host["Cpp"] = endpoints[callResult.Endpoint].Item1;
                     host["WinRT"] = endpoints[callResult.Endpoint].Item2;
+                    host["C"] = endpoints[callResult.Endpoint].Item3;
                 }
 
                 JArray serviceCalls = new JArray();
@@ -66,6 +67,7 @@ namespace XboxLiveTrace
                     {
                         jsonCall["Cpp"] = call.m_xsapiMethods.Item1;
                         jsonCall["WinRT"] = call.m_xsapiMethods.Item2;
+                        jsonCall["C"] = call.m_xsapiMethods.Item3;
                     }
 
                     jsonCall["Request Body"] = call.m_reqBody;

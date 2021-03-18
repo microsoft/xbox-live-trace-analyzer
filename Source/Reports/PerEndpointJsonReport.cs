@@ -28,7 +28,7 @@ namespace XboxLiveTrace
             m_json = json;
         }
 
-        public void RunReport(String outputDirectory, IEnumerable<RuleResult> result, Dictionary<String, Tuple<String, String>> endpoints)
+        public void RunReport(String outputDirectory, IEnumerable<RuleResult> result, Dictionary<String, Tuple<String, String, String>> endpoints)
         {
             var endpointRules = result.GroupBy(r => r.Endpoint);
 
@@ -66,7 +66,7 @@ namespace XboxLiveTrace
             return ruleGroups.Where(g => g.Key == endpoint).SelectMany(g => g.AsEnumerable());
         }
 
-        public JObject ReportEndpoint(IEnumerable<IGrouping<String, RuleResult>> ruleGroups, KeyValuePair<String, Tuple<String,String>> endpoint)
+        public JObject ReportEndpoint(IEnumerable<IGrouping<String, RuleResult>> ruleGroups, KeyValuePair<String, Tuple<String,String,String>> endpoint)
         {
             var endpointList = GetEndpointResults(ruleGroups, endpoint.Key);
 
@@ -78,6 +78,7 @@ namespace XboxLiveTrace
             endpointData["UriService"] = endpoint.Key;
             endpointData["CppService"] = endpoint.Value.Item1;
             endpointData["WinRTService"] = endpoint.Value.Item2;
+            endpointData["CService"] = endpoint.Value.Item3;
 
             JArray ruleResults = new JArray();
 

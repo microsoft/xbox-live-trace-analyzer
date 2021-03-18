@@ -15,6 +15,6 @@ namespace XboxLiveTrace
         //   - upToDate:      Identifies if this version of the Xbox Live Trace Analyzer is up to date
         //   - latestVersion: If upToDate is true, then this will be the current version.
         //                    If upToDate is true, then this will be the latest version that has been released.
-        void RunReport(String outputDirectory, IEnumerable<RuleResult> results, Dictionary<String, Tuple<String, String>> endpointsMap);
+        void RunReport(String outputDirectory, IEnumerable<RuleResult> results, Dictionary<String, Tuple<String, String, String>> endpointsMap);
     }
 }
