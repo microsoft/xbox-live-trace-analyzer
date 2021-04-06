@@ -1,13 +1,3 @@
-if "%1" == "local" goto testlocal
-goto start
-
-:testlocal
-set TOOLS_BINARIESDIRECTORY=%CD%\..\..\Source\bin
-set TOOLS_SOURCEDIRECTORY=%CD%\..\..
-goto serializeForPostbuild
-
-
-:start
 echo Running postBuildScript.cmd
 echo on
 
@@ -17,7 +7,6 @@ set TOOLS_BINARIESDIRECTORY=%BUILD_BINARIESDIRECTORY%
 set TOOLS_SOURCEDIRECTORY=%BUILD_SOURCESDIRECTORY%
 
 
-:serializeForPostbuild
 set TOOLS_DROP_LOCATION=%TOOLS_BINARIESDIRECTORY%\TraceAnalyzer
 rmdir /s /q %TOOLS_DROP_LOCATION%
 mkdir %TOOLS_DROP_LOCATION%
@@ -41,7 +30,7 @@ set LONG_SDK_RELEASE_NAME=%SDK_RELEASE_NAME%-%SDK_POINT_NAME_YEAR%%SDK_POINT_NAM
 
 
 REM ------------------- TOOLS BEGIN -------------------
-set TOOLS_RELEASEDIRECTORY=%TOOLS_BINARIESDIRECTORY%\Release
+set TOOLS_RELEASEDIRECTORY=%TOOLS_BINARIESDIRECTORY%\Release\AnyCPU
 
 copy %TOOLS_RELEASEDIRECTORY%\XboxLiveTraceAnalyzer.exe         %TOOLS_DROP_LOCATION%\ToolZip
 copy %TOOLS_RELEASEDIRECTORY%\XboxLiveTraceAnalyzer.exe.config  %TOOLS_DROP_LOCATION%\ToolZip
@@ -55,5 +44,3 @@ echo.
 echo Done postBuildScript.cmd
 echo.
 endlocal
-
-:done
