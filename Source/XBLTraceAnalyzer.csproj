@@ -103,7 +103,6 @@
     <Compile Include="Rules\StatsRecorder.cs" />
     <Compile Include="Rules\ThrottledCallsRule.cs" />
     <Compile Include="Reports\StatsReport.cs" />
-    <Compile Include="Rules\XR049Rule.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

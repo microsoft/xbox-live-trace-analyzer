@@ -215,7 +215,6 @@ namespace XboxLiveTrace
 
                     analyzer.AddRule(new StatsRecorder { Endpoint = "*" });
                     analyzer.AddRule(new CallRecorder { Endpoint = "*" });
-                    analyzer.AddRule(new XR049Rule { Endpoint = "userpresence.xboxlive.com" });
                     analyzer.AddReport(new PerEndpointJsonReport( m_jsonOnly));
                     analyzer.AddReport(new CallReport( m_jsonOnly));
                     analyzer.AddReport(new StatsReport( m_jsonOnly));
