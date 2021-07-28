@@ -137,8 +137,8 @@ steps:
     inputs:
       filename: 'Utilities/Pipelines/Scripts/postBuildScript.cmd'
 
-  - task: PkgESVPack@10
-    displayName: 'Package ES - VPack '
+  - task: PkgESVPack@12
+    displayName: 'Package ES - VPack'
     inputs:
       sourceDirectory: '$(Pipeline.Workspace)\b\TraceAnalyzer\Tools-VPack'
       description: TraceAnalyzer
