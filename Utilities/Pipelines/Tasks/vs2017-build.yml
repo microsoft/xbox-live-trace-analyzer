@@ -124,31 +124,31 @@ steps:
             }
           ]
 
-- task: BatchScript@1
-  displayName: postBuildScript.cmd
-  inputs:
-    filename: 'Utilities/Pipelines/Scripts/postBuildScript.cmd'
+  - task: BatchScript@1
+    displayName: postBuildScript.cmd
+    inputs:
+      filename: 'Utilities/Pipelines/Scripts/postBuildScript.cmd'
 
-- task: PkgESVPack@10
-  displayName: 'Package ES - VPack '
-  inputs:
-    sourceDirectory: '$(Pipeline.Workspace)\b\TraceAnalyzer\Tools-VPack'
-    description: TraceAnalyzer
-    pushPkgName: TraceAnalyzer
+  - task: PkgESVPack@10
+    displayName: 'Package ES - VPack '
+    inputs:
+      sourceDirectory: '$(Pipeline.Workspace)\b\TraceAnalyzer\Tools-VPack'
+      description: TraceAnalyzer
+      pushPkgName: TraceAnalyzer
 
-- task: CmdLine@1
-  displayName: postBuildScriptVPack.cmd
-  inputs:
-    filename: 'Utilities/Pipelines/Scripts/postBuildScriptVPack.cmd'
+  - task: CmdLine@1
+    displayName: postBuildScriptVPack.cmd
+    inputs:
+      filename: 'Utilities/Pipelines/Scripts/postBuildScriptVPack.cmd'
 
-- task: PublishPipelineArtifact@1
-  displayName: 'Publish Pipeline Artifact'
-  inputs:
-    targetPath: '$(Pipeline.Workspace)\b\TraceAnalyzer'
-    artifact: 'Trace_Analyzer_PipelineArtifacts_$(BUILDCONFIGURATION)'
+  - task: PublishPipelineArtifact@1
+    displayName: 'Publish Pipeline Artifact'
+    inputs:
+      targetPath: '$(Pipeline.Workspace)\b\TraceAnalyzer'
+      artifact: 'Trace_Analyzer_PipelineArtifacts_$(BUILDCONFIGURATION)'
 
-- task: PublishPipelineArtifact@1
-  displayName: 'Publish Pipeline Artifact VPack'
-  inputs:
-    targetPath: '$(Pipeline.Workspace)\b\TraceAnalyzer\Tools-VPack'
-    artifact: 'Trace_Analyzer_PipelineArtifacts_VPack_$(BUILDCONFIGURATION)'
+  - task: PublishPipelineArtifact@1
+    displayName: 'Publish Pipeline Artifact VPack'
+    inputs:
+      targetPath: '$(Pipeline.Workspace)\b\TraceAnalyzer\Tools-VPack'
+      artifact: 'Trace_Analyzer_PipelineArtifacts_VPack_$(BUILDCONFIGURATION)'
