@@ -39,6 +39,7 @@ steps:
     inputs:
       command: 'restore'
       restoreSolution: '**/*.sln'
+      packDestination: '$(Build.ArtifactStagingDirectory)\External\Packages'
 
   - task: UseDotNet@2
     displayName: 'Use .NET Core sdk'
