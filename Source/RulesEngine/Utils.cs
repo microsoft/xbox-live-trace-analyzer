@@ -103,6 +103,14 @@ namespace XboxLiveTrace
         public static bool IsAnalyzedService(WebHeaderCollection headers, String customUserAgent)
         {
             var result = false;
+
+            // This check is being temporarily added to avoid counting SocialManager small batches and polling towards LTA limits
+            if (headers["User-Agent"] != null && headers["User-Agent"].Contains("SocialManager"))
+            {
+                System.Diagnostics.Debug.WriteLine("header[User-Agent] contains Social Manager. This is currently being excluded to avoid counting small batches and polling by Social Manager towards limits.");
+                return result;
+            }
+
             if (headers["x-xbl-api-build-version"] != null && headers["x-xbl-api-build-version"].Equals("adk", StringComparison.OrdinalIgnoreCase))
             {
                 System.Diagnostics.Debug.WriteLine("header[x-xbl-api-build-version] is adk");
@@ -134,7 +142,7 @@ namespace XboxLiveTrace
                 else if (!headers["User-Agent"].Contains("XboxServicesAPI"))
                 {
                     System.Diagnostics.Debug.WriteLine("header[User-Agent] does not contain XboxServicesAPI");
-                }
+                } 
                 else
                 {
                     System.Diagnostics.Debug.WriteLine("header[x-xbl-client-name] is not null");
