@@ -224,6 +224,11 @@ namespace XboxLiveTrace
             List<Sequence> sequences = new List<Sequence>();
             foreach (ServiceCallItem thisItem in nonShoulderTapItems)
             {
+                if (thisItem.m_reqHeader.Contains("SocialManager"))
+                {
+                    continue;
+                }
+                
                 // Used to skip over already analyzed repeated calls.
                 if (allRepeats.Contains(thisItem)) { 
                     continue; 

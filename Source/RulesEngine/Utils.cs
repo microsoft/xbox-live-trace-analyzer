@@ -104,13 +104,6 @@ namespace XboxLiveTrace
         {
             var result = false;
 
-            // This check is being temporarily added to avoid counting SocialManager small batches and polling towards LTA limits
-            if (headers["User-Agent"] != null && headers["User-Agent"].Contains("SocialManager"))
-            {
-                System.Diagnostics.Debug.WriteLine("header[User-Agent] contains Social Manager. This is currently being excluded to avoid counting small batches and polling by Social Manager towards limits.");
-                return result;
-            }
-
             if (headers["x-xbl-api-build-version"] != null && headers["x-xbl-api-build-version"].Equals("adk", StringComparison.OrdinalIgnoreCase))
             {
                 System.Diagnostics.Debug.WriteLine("header[x-xbl-api-build-version] is adk");

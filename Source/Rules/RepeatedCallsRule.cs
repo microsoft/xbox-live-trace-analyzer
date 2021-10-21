@@ -45,6 +45,11 @@ namespace XboxLiveTrace
 
             foreach (ServiceCallItem thisItem in items.Where(item => item.m_isShoulderTap == false))
             {
+                if (thisItem.m_reqHeader.Contains("SocialManager"))
+                {
+                    continue;
+                }
+
                 if (repeats.Contains(thisItem))
                 {
                     continue;
