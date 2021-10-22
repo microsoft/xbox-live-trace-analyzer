@@ -103,6 +103,7 @@ namespace XboxLiveTrace
         public static bool IsAnalyzedService(WebHeaderCollection headers, String customUserAgent)
         {
             var result = false;
+
             if (headers["x-xbl-api-build-version"] != null && headers["x-xbl-api-build-version"].Equals("adk", StringComparison.OrdinalIgnoreCase))
             {
                 System.Diagnostics.Debug.WriteLine("header[x-xbl-api-build-version] is adk");
@@ -134,7 +135,7 @@ namespace XboxLiveTrace
                 else if (!headers["User-Agent"].Contains("XboxServicesAPI"))
                 {
                     System.Diagnostics.Debug.WriteLine("header[User-Agent] does not contain XboxServicesAPI");
-                }
+                } 
                 else
                 {
                     System.Diagnostics.Debug.WriteLine("header[x-xbl-client-name] is not null");
