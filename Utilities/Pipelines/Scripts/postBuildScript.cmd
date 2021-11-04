@@ -41,10 +41,6 @@ copy %TOOLS_RELEASEDIRECTORY%\XboxLiveTraceAnalyzer-ReadMe.docx %TOOLS_DROP_LOCA
 REM ------------------- OS VPACK BEGIN -------------------
 copy %TOOLS_RELEASEDIRECTORY%\XboxLiveTraceAnalyzer.exe %TOOLS_DROP_LOCATION_VPACK%\XblTraceAnalyzer.exe
 
-
-%TOOLS_SOURCEDIRECTORY%\Utilities\VSOBuildScripts\vZip.exe /FOLDER:%TOOLS_DROP_LOCATION%\ToolZip /OUTPUTNAME:%TOOLS_DROP_LOCATION%\XboxLiveTraceAnalyzer-%LONG_SDK_RELEASE_NAME%.zip
-rmdir /s /q %TOOLS_DROP_LOCATION%\ToolZip 
-
 echo.
 echo Done postBuildScript.cmd
 echo.
