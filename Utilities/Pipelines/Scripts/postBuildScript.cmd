@@ -15,7 +15,7 @@ mkdir %TOOLS_DROP_LOCATION_VPACK%
 mkdir %TOOLS_DROP_LOCATION%\ToolZip
 
 setlocal
-call %TOOLS_SOURCEDIRECTORY%\Utilities\VSOBuildScripts\setBuildVersion.cmd
+call %TOOLS_SOURCEDIRECTORY%\Utilities\Pipelines\Scripts\setBuildVersion.cmd
 
 
 REM ------------------- VERSION SETUP BEGIN -------------------
