@@ -278,7 +278,7 @@ EndpointDetails.prototype = {
 	build: function(results) {
 		this.data = results;
 		var ruleData = this.rules;
-		this.endpointContianer = $("<div>").addClass("result-container");
+		this.endpointContainer = $("<div>").addClass("result-container");
 		var endpointList = $("<ul>").addClass("endpoint-results");
 
 		$.each(results, function (index, endpoint) {
@@ -307,11 +307,11 @@ EndpointDetails.prototype = {
 			endpointList.append(listItem);
 		});
 
-		this.endpointContianer.append(endpointList.append($("<div>").css({ "height": "435px", "border-left": "1px solid black" })));
+		this.endpointContainer.append(endpointList.append($("<div>").css({ "height": "435px", "border-left": "1px solid black" })));
 	},
 	
 	show: function(element) {
-		element.append(this.endpointContianer);
+		element.append(this.endpointContainer);
 
 		$.each(this.rules, function (index, rule) {
 			rule.fix();
@@ -330,7 +330,7 @@ EndpointDetails.prototype = {
 	},
 	changeAPI: function (API) {
 		var results = this.data;
-		$.each($(".endpoint-header"), function (index, header) {
+		$.each(this.endpointContainer.find(".endpoint-header"), function (index, header) {
 			var idx = Number(index / 2);
 			$(header).text(results[Math.floor(idx)][API + "Service"]);
 		});
@@ -651,6 +651,7 @@ CallPage.prototype = {
 	show: function(element, callId) {
 		element.append(this.callDetails);
 		this.callDetails.find(".endpoint-header").fixThis();
+		this.clean = false;
 		if(typeof callId !== "undefined") {
 			var scrollbox = $(".result-container");
 			var endpoint = $("#call" + callId);
@@ -668,6 +669,33 @@ CallPage.prototype = {
 				processedCall.div.html("<b>" + API + " Method:</b> " + processedCall.call[API]);
 			}
 		});
+
+		var callList = this.calls["Call List"];
+		
+		$.each(this.callDetails.find(".endpoint-header").not(".endpoint-header-fixed"), function(index, header) {
+			var endpoint = callList[index];
+			var totalCalls = $("<div>").css({
+					"float": "right",
+					"font-size": "12px"
+			}).text("Total Calls: " + endpoint.Calls.length);
+			
+			if(endpoint[API])
+			{
+				$(header).text(endpoint[API]);
+			}
+			else
+			{
+				$(header).empty();
+			}
+			$(header).append(totalCalls);
+		});
+	},
+	cleanUp: function() {
+		if (this.clean == false || this.clean == "undefined") {
+			this.clean = true;
+			this.callDetails.find(".endpoint-header-fixed").remove();
+			this.callDetails.find(".endpoint-header").unwrap();
+		}
 	},
 }
 

@@ -61,6 +61,7 @@
 	}
 
 	function showReport() {
+		callPage.cleanUp();
 		reportPage.show($("#displayArea").empty());
 		$("#reportButton").addClass("active");
 		$("#statsButton").removeClass("active");
@@ -69,6 +70,7 @@
 	}
 	function showStatistics() {
 		reportPage.cleanUp();
+		callPage.cleanUp();
 		statsPage.show($("#displayArea").empty());
 		statsPage.changeAPI(API);
 		$("#reportButton").removeClass("active");
@@ -86,6 +88,7 @@
 	}
 	function showWarnings() {
 		reportPage.cleanUp();
+		callPage.cleanUp();
 		warningPage.show($("#displayArea").empty());
 		$("#reportButton").removeClass("active");
 		$("#statsButton").removeClass("active");
