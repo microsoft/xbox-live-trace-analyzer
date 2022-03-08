@@ -130,6 +130,7 @@ namespace XboxLiveTrace
 
             // Group the archive entries by frame number
             var result = from e in archive.Entries
+                         orderby e.Name
                          where e.Name.Contains("_c.txt") || e.Name.Contains("_s.txt") || e.Name.Contains("_m.xml")
                          group e by Utils.GetFrameNumber(e.Name) into g
                          select new { Frame = g.Key, Data = g };
