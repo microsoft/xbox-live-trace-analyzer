@@ -113,8 +113,8 @@ steps:
 
   #Install Node.js. Required for Package ES SDL Guardian step.
   - task: NodeTool@0
-  inputs:
-    versionSpec: '14.x'
+    inputs:
+      versionSpec: '14.x'
   
   # This is the Package ES simplified SDL sources template. 
   - template: v2/Steps/PackageES/Windows.SDL.Sources.Analysis.OS.Undocked.yml@templates_onebranch
