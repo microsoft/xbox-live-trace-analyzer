@@ -7,7 +7,11 @@ parameters:
     type: string
 
 steps:
-  - template: checkout.yml
+  - checkout: self
+    path: 's'
+    clean: true
+    submodules: recursive
+    persistCredentials: true
 
   - task: PkgESSetupBuild@12
     displayName: PkgES build setup
@@ -137,7 +141,6 @@ steps:
       sourceDirectory: '$(Pipeline.Workspace)\b\TraceAnalyzer\Tools-VPack'
       description: 'TraceAnalyzer.$(CONFIGURATION)'
       pushPkgName: 'TraceAnalyzer.$(CONFIGURATION)'
-      vpackToken: '$(VPackToken)'
 
   - task: CmdLine@1
     displayName: postBuildScriptVPack.cmd
