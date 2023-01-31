@@ -10,6 +10,16 @@ trigger: none
 # - https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables
 name: $(Build.DefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 
+resources:
+  repositories:
+  - repository: self
+    type: git
+    ref: refs/heads/main
+  - repository: templates_onebranch
+    type: git
+    name: OneBranch.Pipelines/GovernedTemplates
+    ref: refs/heads/main
+
 jobs:
 
   ####################
