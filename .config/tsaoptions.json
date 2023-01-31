@@ -1,0 +1,9 @@
+{
+  "instanceUrl": "https://microsoft.visualstudio.com",
+  "projectName": "xbox",
+  "areaPath": "Xbox\\GDX\\SDKs\\XSAPI",
+  "iterationPath": "Xbox\\Backlog",
+  "notificationAliases": [ "gdxcoresdkteam@microsoft.com" ],
+  "ignoreBranchName": true,
+  "template": "TFSOSG"
+}
