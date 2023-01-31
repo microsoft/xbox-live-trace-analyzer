@@ -7,11 +7,7 @@ parameters:
     type: string
 
 steps:
-  - checkout: self
-    path: 's'
-    clean: true
-    submodules: recursive
-    persistCredentials: true
+  - template: checkout.yml
 
   - task: PkgESSetupBuild@12
     displayName: PkgES build setup
@@ -114,6 +110,11 @@ steps:
     displayName: postBuildScript.cmd
     inputs:
       filename: 'Utilities/Pipelines/Scripts/postBuildScript.cmd'
+
+  #Install Node.js. Required for Package ES SDL Guardian step.
+  - task: NodeTool@0
+  inputs:
+    versionSpec: '14.x'
   
   # This is the Package ES simplified SDL sources template. 
   - template: v2/Steps/PackageES/Windows.SDL.Sources.Analysis.OS.Undocked.yml@templates_onebranch
