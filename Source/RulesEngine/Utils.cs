@@ -142,6 +142,13 @@ namespace XboxLiveTrace
                 }
             }
 
+            //PlayFabParty
+            if(headers["User-Agent"] != null && headers["User-Agent"].Contains("PlayFabParty"))
+            {
+                System.Diagnostics.Debug.WriteLine("header[User-Agent] contains PlayFabParty");
+                result = true;
+            }
+
             // XCE CS1.0 event
             if (headers["X-XBL-Build-Version"] != null)
             {
