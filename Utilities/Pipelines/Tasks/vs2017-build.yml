@@ -74,29 +74,6 @@ steps:
       
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: Component Detection
-    
-  # Security and compliance, failure here should fail the build
-  - task: PkgESSecComp@10
-    displayName: 'Security and Compliance tasks'
-    inputs:
-      fileNewBugs: false
-      taskLogVerbosity: Diagnostic
-      scanAll: true
-      failOnStdErr: true
-      dropOverride: $(Build.ArtifactStagingDirectory)
-      secCompConfigFromTask: |
-        tools:
-          - toolName: CheckCFlags
-            enable: true
-          - toolName: CFGCheck
-            enable: false
-          - toolName: Policheck
-            enable: true
-          - toolName: XFGCheck
-            enable: true
-          - toolName: CredScan
-            enable: true
-      binVersion: 'PreProduction'
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'ESRP CodeSigning'
@@ -134,13 +111,37 @@ steps:
     inputs:
       filename: 'Utilities/Pipelines/Scripts/postBuildScript.cmd'
 
+  #Install Node.js. Required for Package ES SDL Guardian step.
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '14.x'
+  
+  # This is the Package ES simplified SDL sources template. 
+  - template: v2/Steps/PackageES/Windows.SDL.Sources.Analysis.OS.Undocked.yml@templates_onebranch
+    parameters:
+        globalsdl:
+            codeql: 
+                tsandjs:
+                  enabled: false
+                python:
+                  enabled: false
+                psscriptanalyzer:
+                  enable: true
+            prefast:
+                enabled: false
+
+  # This is the Package ES simplified SDL binary template. 
+  - template: v2/Steps/PackageES/Windows.SDL.Binary.Analysis.OS.Undocked.yml@templates_onebranch
+    parameters:
+        variables:
+            ob_outputDirectory: $(BUILD.BINARIESDIRECTORY)
+
   - task: PkgESVPack@12
     displayName: 'Package ES - VPack'
     inputs:
       sourceDirectory: '$(Pipeline.Workspace)\b\TraceAnalyzer\Tools-VPack'
       description: 'TraceAnalyzer.$(CONFIGURATION)'
       pushPkgName: 'TraceAnalyzer.$(CONFIGURATION)'
-      vpackToken: '$(VPackToken)'
 
   - task: CmdLine@1
     displayName: postBuildScriptVPack.cmd
