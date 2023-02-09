@@ -42,7 +42,7 @@ namespace XboxLiveTrace
                     XRName = "XR-003: Title Quality for Submission",
                     Requirement = "Games must not make calls using a Sample PlayFab TitleID.",
                     Remark = sampleTitleIDresults.First().Violations.First().m_summary,
-                    Intent = "Partner services must be available and properly configured for testing and certification."
+                    Intent = "Titles must not use sample Title IDs outside of evaluating sample code."
                 });
             }
 
