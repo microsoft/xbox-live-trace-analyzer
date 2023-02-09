@@ -114,3 +114,4 @@
 "PATCH https://statswrite.xboxlive.com/stats/users/{xuid}/scids/{scid}/","XblTitleManagedStatsUpdateStatsAsync","N/A","XblTitleManagedStatsUpdateStatsAsync"
 "statsread.xboxlive.com","N/A","N/A","N/A"
 "GET https://statsread.xboxlive.com/stats/users/{xuid}/scids/{scid}/","N/A","N/A","N/A"
+"{titleid}.playfabapi.com","N/A","N/A","N/A"

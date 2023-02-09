@@ -14,6 +14,7 @@ namespace XboxLiveTrace
         public const String ThrottleCalls = "ThrottledCalls";
         public const String BatchFrequency = "BatchFrequency";
         public const String PollDetection = "PollingDetection";
+        public const String TitleID = "TitleID";
 
         public const UInt32 CallFrequencySustainedTimePeriod = 300;
         public const UInt32 CallFrequencyBurstTimePeriod = 15;
