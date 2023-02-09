@@ -548,6 +548,21 @@
         { 
               "SameDeltaThresholdPercent": ".01"
         }
+    },
+    {
+        "Type": "TitleId",
+        "Name": "TitleId_Rule",
+        "Endpoint": "*.*",
+        "Properties":
+        {
+            "TitleIDs": [
+			"86E2",
+            "9AD5D",
+            "78E25",
+            "99DA",
+            "63C80"
+            ]
+        }
     }
     ]
 }

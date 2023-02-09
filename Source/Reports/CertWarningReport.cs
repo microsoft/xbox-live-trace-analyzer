@@ -33,6 +33,19 @@ namespace XboxLiveTrace
         {
             List<CertWarning> warningResults = new List<CertWarning>();
 
+            //Sample Title ID detection
+            IEnumerable<RuleResult> sampleTitleIDresults = result.Where(r => r.RuleName == "Sample Title ID Detection");
+            if(sampleTitleIDresults. Count() > 0 && sampleTitleIDresults.First().ViolationCount > 0)
+            {
+                warningResults.Add(new CertWarning
+                {
+                    XRName = "XR-003: Title Quality for Submission",
+                    Requirement = "Games must not make calls using a Sample PlayFab TitleID.",
+                    Remark = sampleTitleIDresults.First().Violations.First().m_summary,
+                    Intent = "Partner services must be available and properly configured for testing and certification."
+                });
+            }
+
             using (var output = new StreamWriter(Path.Combine(outputDirectory, m_json ? "certWarning.json" : "certWarning.js")))
             {
                 if (!m_json)

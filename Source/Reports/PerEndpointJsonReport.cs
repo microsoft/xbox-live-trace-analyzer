@@ -20,7 +20,8 @@ namespace XboxLiveTrace
                                                                   PollingDetectionRule.DisplayName,
                                                                   RepeatedCallsRule.DisplayName,
                                                                   SmallBatchDetectionRule.DisplayName,
-                                                                  ThrottledCallsRule.DisplayName
+                                                                  ThrottledCallsRule.DisplayName,
+                                                                  TitleIdRule.DisplayName
                                                                 };
         private bool m_json;
         public PerEndpointJsonReport(bool json)
@@ -63,7 +64,7 @@ namespace XboxLiveTrace
 
         private static IEnumerable<RuleResult> GetEndpointResults(IEnumerable<IGrouping<String, RuleResult>> ruleGroups, String endpoint)
         {
-            return ruleGroups.Where(g => g.Key == endpoint).SelectMany(g => g.AsEnumerable());
+            return ruleGroups.Where(g => Utils.ConvertUriToRegex(endpoint).IsMatch(g.Key) ).SelectMany(g => g.AsEnumerable());
         }
 
         public JObject ReportEndpoint(IEnumerable<IGrouping<String, RuleResult>> ruleGroups, KeyValuePair<String, Tuple<String,String,String>> endpoint)

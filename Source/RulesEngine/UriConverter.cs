@@ -49,11 +49,11 @@ namespace XboxLiveTrace
 
                     if(uriSplit[0] == "GET")
                     {
-                        m_getMethods.Add(ConvertUriToRegex(uriSplit[1]), methodTuple);
+                        m_getMethods.Add(Utils.ConvertUriToRegex(uriSplit[1]), methodTuple);
                     }
                     else
                     {
-                        m_nonGetMethods.Add(ConvertUriToRegex(uriSplit[1]), methodTuple);
+                        m_nonGetMethods.Add(Utils.ConvertUriToRegex(uriSplit[1]), methodTuple);
                     }
                 }
                 else
@@ -61,24 +61,6 @@ namespace XboxLiveTrace
                     m_services.Add(uri, methodTuple);
                 }
             }
-        }
-
-        private Regex ConvertUriToRegex(String uri)
-        {
-            Regex dotReplace = new Regex("\\.");
-            uri = dotReplace.Replace(uri, "\\.");
-
-            Regex questionReplace = new Regex("\\?");
-            uri = questionReplace.Replace(uri, "\\?");
-
-            Regex optionalReplace = new Regex("\\[.*?\\]");
-            uri = optionalReplace.Replace(uri, ".*");
-
-            Regex requiredReplace = new Regex("\\{.*?\\}");
-
-            uri = requiredReplace.Replace(uri, ".+");
-
-            return new Regex(uri);
         }
 
         public Tuple<String, String, String> GetService(String service)

@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
+using System.Text.RegularExpressions;
 
 namespace XboxLiveTrace
 {
@@ -142,10 +143,10 @@ namespace XboxLiveTrace
                 }
             }
 
-            //PlayFabParty
-            if(headers["User-Agent"] != null && headers["User-Agent"].Contains("PlayFabParty"))
+            //PlayFab
+            if(headers["User-Agent"] != null && headers["User-Agent"].Contains("PlayFab"))
             {
-                System.Diagnostics.Debug.WriteLine("header[User-Agent] contains PlayFabParty");
+                System.Diagnostics.Debug.WriteLine("header[User-Agent] contains PlayFab");
                 result = true;
             }
 
@@ -379,6 +380,24 @@ namespace XboxLiveTrace
                     return decompressed;
                 }
             }
+        }
+
+        public static Regex ConvertUriToRegex(String uri)
+        {
+            Regex dotReplace = new Regex("\\.");
+            uri = dotReplace.Replace(uri, "\\.");
+
+            Regex questionReplace = new Regex("\\?");
+            uri = questionReplace.Replace(uri, "\\?");
+
+            Regex optionalReplace = new Regex("\\[.*?\\]");
+            uri = optionalReplace.Replace(uri, ".*");
+
+            Regex requiredReplace = new Regex("\\{.*?\\}");
+
+            uri = requiredReplace.Replace(uri, ".+");
+
+            return new Regex(uri);
         }
     }
 
