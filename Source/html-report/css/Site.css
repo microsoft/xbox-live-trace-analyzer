@@ -1,38 +1,37 @@
-﻿/* Move down content because we have a fixed navbar that is 50px tall */
+/* Set background color and padding bottom to body element */
 body {
-    padding-bottom: 20px;
-    background-color: #444444;
+padding-bottom: 20px;
+background-color: #444444;
 }
 
-/* Wrapping element */
-/* Set some basic padding to keep content from hitting the edges */
+/* Set padding left and right for the main content */
 .body-content {
-    padding-left: 15px;
-    padding-right: 15px;
+padding-left: 15px;
+padding-right: 15px;
 }
 
-/* Override the default bootstrap behavior where horizontal description lists 
-   will truncate terms that are too long to fit in the left column 
-*/
+/* Set white space to normal for horizontal description lists */
 .dl-horizontal dt {
-    white-space: normal;
+white-space: normal;
 }
 
-/* Set widths on the form inputs since otherwise they're 100% wide */
+/* Set max width for various input types */
 input[type="text"],
 input[type="password"],
 input[type="email"],
 input[type="tel"],
 input[type="select"] {
-    max-width: 280px;
+max-width: 280px;
 }
 
-/* Responsive: Portrait tablets and up */
+/* Responsive styles for portrait tablets and up /
 @media screen and (min-width: 768px) {
-    .jumbotron {
-        margin-top: 20px;
-    }
-    .body-content {
-        padding: 0;
-    }
+/ Margin top for jumbotron /
+.jumbotron {
+margin-top: 20px;
+}
+/ Reset padding for main content */
+.body-content {
+padding: 0;
+}
 }
