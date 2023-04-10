@@ -1,35 +1,42 @@
 # CI trigger. Fires on merges to specific branches.
 # Ref: https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/azure-repos-git#ci-triggers
-# A pipeline with no CI trigger
-trigger: none
+
+trigger:
+  branches:
+    include:
+      - main
+      - feature/*
+    exclude:
+      - hotfix/*
 
 # Name builds with the definition name, date, and build-count-for-that-day. For
 # example, "BuildDefName_20210214.1".
 # Refs:
 # - https://docs.microsoft.com/en-us/azure/devops/pipelines/process/run-number
 # - https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables
-name: $(Build.DefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
+
+name: $(Build.DefinitionName)_$(date:yyMMdd).$(rev:r)
 
 resources:
   repositories:
-  - repository: self
-    type: git
-    ref: refs/heads/main
-  - repository: templates_onebranch
-    type: git
-    name: OneBranch.Pipelines/GovernedTemplates
-    ref: refs/heads/main
+    - repository: self
+      type: git
+      ref: refs/heads/main
+    - repository: templates_onebranch
+      type: git
+      name: OneBranch.Pipelines/GovernedTemplates
+      ref: refs/heads/main
 
 jobs:
 
   ####################
-  # Visual Studio 2017
+  # Visual Studio 2019
   ####################
 
-  - job: Win32Vs17Build
-    displayName: XblTraceAnalyzer Win32 VS2017 Build
+  - job: Win32Vs19Build
+    displayName: XblTraceAnalyzer Win32 VS2019 Build
     pool:
-      name: xbl-1es-vs2017-pool
+      name: xbl-1es-vs2019-pool
     timeoutInMinutes: 180
     strategy:
       matrix:
@@ -42,7 +49,7 @@ jobs:
           Configuration: Release
           Prefast: Disable
     steps:
-      - template: Tasks/vs2017-build.yml
+      - template: Tasks/vs2019-build.yml
         parameters:
           platform: $(Platform)
           configuration: $(Configuration)
