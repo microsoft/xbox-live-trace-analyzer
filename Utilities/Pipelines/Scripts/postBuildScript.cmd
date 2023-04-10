@@ -6,10 +6,13 @@ set
 set TOOLS_BINARIESDIRECTORY=%BUILD_BINARIESDIRECTORY%
 set TOOLS_SOURCEDIRECTORY=%BUILD_SOURCESDIRECTORY%
 
-
 set TOOLS_DROP_LOCATION=%TOOLS_BINARIESDIRECTORY%\TraceAnalyzer
 set TOOLS_DROP_LOCATION_VPACK=%TOOLS_DROP_LOCATION%\Tools-VPack
+
+rem Remove existing TraceAnalyzer directory
 rmdir /s /q %TOOLS_DROP_LOCATION%
+
+rem Create TraceAnalyzer directory and subdirectories
 mkdir %TOOLS_DROP_LOCATION%
 mkdir %TOOLS_DROP_LOCATION_VPACK%
 mkdir %TOOLS_DROP_LOCATION%\ToolZip
@@ -30,16 +33,16 @@ set SDK_POINT_NAME_DAY=%DATETIME_DAY%
 set SDK_RELEASE_NAME=%SDK_RELEASE_YEAR:~2,2%%SDK_RELEASE_MONTH%
 set LONG_SDK_RELEASE_NAME=%SDK_RELEASE_NAME%-%SDK_POINT_NAME_YEAR%%SDK_POINT_NAME_MONTH%%SDK_POINT_NAME_DAY%
 
-
 REM ------------------- TOOLS BEGIN -------------------
 set TOOLS_RELEASEDIRECTORY=%TOOLS_BINARIESDIRECTORY%\Release\AnyCPU
 
-copy %TOOLS_RELEASEDIRECTORY%\XboxLiveTraceAnalyzer.exe         %TOOLS_DROP_LOCATION%\ToolZip\XblTraceAnalyzer.exe
-copy %TOOLS_RELEASEDIRECTORY%\XboxLiveTraceAnalyzer.exe.config  %TOOLS_DROP_LOCATION%\ToolZip\XblTraceAnalyzer.exe.config
+rem Copy tool files to TraceAnalyzer directory
+copy %TOOLS_RELEASEDIRECTORY%\XboxLiveTraceAnalyzer.exe %TOOLS_DROP_LOCATION%\ToolZip\XblTraceAnalyzer.exe
+copy %TOOLS_RELEASEDIRECTORY%\XboxLiveTraceAnalyzer.exe.config %TOOLS_DROP_LOCATION%\ToolZip\XblTraceAnalyzer.exe.config
 copy %TOOLS_RELEASEDIRECTORY%\XboxLiveTraceAnalyzer-ReadMe.docx %TOOLS_DROP_LOCATION%\ToolZip\XblTraceAnalyzer-ReadMe.docx
 
-REM ------------------- OS VPACK BEGIN -------------------
-copy %TOOLS_RELEASEDIRECTORY%\XboxLiveTraceAnalyzer.exe %TOOLS_DROP_LOCATION_VPACK%\XblTraceAnalyzer.exe
+rem Copy VPack file to TraceAnalyzer\Tools-VPack directory
+copy %XES_VPACKMANIFESTDIRECTORY%\%XES_VPACKMANIFESTNAME% %TOOLS_DROP_LOCATION_VPACK%\XblTraceAnalyzer.exe
 
 echo.
 echo Done postBuildScript.cmd
