@@ -76,7 +76,7 @@
 "POST https://profile.xboxlive.com/users/batch/profile/settings","profile_service::get_user_profile(s)","ProfileService::GetUserProfile(s)","XblProfileGetUserProfile(s)Async"
 "GET https://profile.xboxlive.com/users/{userId}/profile/settings/people/{socialGroup}","profile_service::get_user_profiles_for_social_group","ProfileService::GetUserProfilesForSocialGroup","XblProfileGetUserProfilesForSocialGroupAsync"
 "social.xboxlive.com","social_service","SocialService","XblSocial"
-"GET https://social.xboxlive.com/users/{ownerId}/people","xbox_social_relationship_result::get_next","XboxSocialRelationshipResult::GetNext","XblSocialRelationshipResultGetNextAsync"
+"GET https://social.xboxlive.com/users/{ownerId}/people","xbox_social_relationship_result::get_next","XboxSocialRelationshipResult::GetNext","XblSocialRelationshipResultGetNextAsync or XblSocialGetSocialRelationshipsAsync"
 "GET https://social.xboxlive.com/users/{ownerId}/people?view={view}&startIndex={startIndex}&maxItems={maxItems}","social_service::get_social_relationships","SocialService::GetSocialRelationships","XblSocialGetSocialRelationshipsAsync"
 "reputation.xboxlive.com","reputation_service","ReputationService","XblSocial"
 "POST https://reputation.xboxlive.com/users/xuid({xuid})/feedback","reputation_service::submit_reputation_feedback","ReputationService::SubmitReputationFeedback","XblSocialSubmitReputationFeedbackAsync"
