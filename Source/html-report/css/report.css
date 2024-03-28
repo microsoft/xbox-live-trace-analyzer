@@ -68,6 +68,7 @@ body {
     top: -2px;
     left: -2px;
     padding: 5px;
+    color:#ffffff;
 }
 
 .atg-dropdown select:hover {
@@ -104,6 +105,7 @@ body {
 	border: none;
 	vertical-align: bottom;
 	width: 75px;
+    color:#ffffff;
 }
 
 .atg-heatmap .hover {
@@ -118,6 +120,7 @@ body {
     text-align: left;
     padding: 5px;
     width: 200px;
+    color:#ffffff;
 }
 
 .atg-heatmap .service-col:active{
@@ -240,6 +243,7 @@ body {
     list-style-type: none;
     padding-left: 0px;
     margin-bottom: 0px;
+    color:#ffffff;
 }
 
 .rule-name,.summary-line {
@@ -253,6 +257,7 @@ body {
     width: auto;
     cursor: pointer;
     margin-left: 44px;
+    color:#ffffff;
 }
 
 .api-call {
@@ -356,7 +361,7 @@ body {
     float: right;
     margin: -1px;
     margin-top: -30px;
-    color: black;
+    color: #ffffff;
     text-align: center;
     padding: 5px;
 }
@@ -437,10 +442,12 @@ body {
     width: 200px;
 }
 
-.stats-table td {
+.stats-table td,
+.stats-table th {
     text-align: left;
     padding: 3px;
     padding-left: 5px;
+    color:#ffffff;
 }
 
 .stats-table tr:nth-child(even) {
@@ -470,5 +477,5 @@ pre {
     border: 1px solid black;
     border-radius: 0px;
     background-color: #3C3C3C;
-    color: #7E7E7E;
+    color: #ffffff;
 }

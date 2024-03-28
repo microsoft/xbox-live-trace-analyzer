@@ -441,7 +441,7 @@ StatsPage.prototype = {
 		this._buildCountsGraph(this.stats);
 		
 		
-		this.statDetails = $("<table>").addClass("stats-table");
+		this.statDetails = $("<table summary='Details of endpoint, total calls and average time between calls'>").addClass("stats-table");
 		var header = $("<tr>");
 		var endpoint = $("<td>").text("Endpoint").addClass("endpoint");
 		var totalCalls = $("<td>").text("Total Calls").addClass("center-text");
@@ -541,9 +541,9 @@ StatsPage.prototype = {
 		
 		this.statDetails.empty();
 		var header = $("<tr>").addClass("header-row");
-		var endpoint = $("<td>").text("Endpoint").addClass("endpoint");
-		var totalCalls = $("<td>").text("Total Calls").addClass("center-text");
-		var avgTime = $("<td>").text("Average Time Between Calls").addClass("center-text");
+		var endpoint = $("<th>").text("Endpoint").addClass("endpoint");
+		var totalCalls = $("<th>").text("Total Calls").addClass("center-text");
+		var avgTime = $("<th>").text("Average Time Between Calls").addClass("center-text");
 		this.statDetails.append(header.append(endpoint, totalCalls, avgTime));
 		var details = this.statDetails;
 		$.each(this.stats, function (index, stat) {
