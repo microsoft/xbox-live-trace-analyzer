@@ -30,22 +30,31 @@ body {
     width: 85px;
     height: 40px;
     padding: 5px;
-    margin: -1px;
+    margin: 0px;
     float: left;
 }
-
-.atg-nav-item:hover {
-    background-color: #464646;
-    color: white;
+.atg-nav-item > img {
+    filter:  none !important;
 }
 
+.atg-nav-item:hover, .atg-nav-item:focus{
+    background-color: #464646;
+    color: white;
+    border: 2px solid white;
+}
 .atg-nav-item:active {
-    border: 1px solid white;
+    border: 2px solid white;
     position: relative;
 }
 
 .active {
     background-color: #575757;
+    border: 1px solid #fff;
+    outline: 1px solid #575757;
+}
+.active:focus {
+    border: 2px solid #fff;
+    outline: 2px solid #575757;
 }
 
 .atg-dropdown {
@@ -478,4 +487,10 @@ pre {
     border-radius: 0px;
     background-color: #3C3C3C;
     color: #ffffff;
+}
+
+@media (prefers-color-scheme: light) {
+    .atg-nav-item > img {
+        filter: invert(1) !important;
+    }
 }

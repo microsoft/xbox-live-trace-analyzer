@@ -201,6 +201,7 @@ RuleDetails.prototype = {
 		this.expanderData = [this, this.expander, ruleNameDiv];
 		this.expander.click(this.expanderData, toggleExpanderElemement);
 		var image = $("<img>").attr("src", "img/" + rule.Result + ".png").addClass("result-icon");
+		var image = $("<img role='presentation'>").attr("src", "img/" + rule.Result + ".png").addClass("result-icon");
 		ruleNameDiv.append(image, rule.Name);
 
 		rowDiv.append(this.expander, ruleNameDiv)
@@ -440,14 +441,14 @@ StatsPage.prototype = {
 		this.callCountgraph = $("<div>").css({ "width": "780px", "height": "300px", "margin": "auto"});
 		this._buildCountsGraph(this.stats);
 		
-		
-		this.statDetails = $("<table summary='Details of endpoint, total calls and average time between calls'>").addClass("stats-table");
+		this.statDetails = $("<table>").addClass("stats-table");
 		var header = $("<tr>");
 		var endpoint = $("<td>").text("Endpoint").addClass("endpoint");
 		var totalCalls = $("<td>").text("Total Calls").addClass("center-text");
 		var avgTime = $("<td>").text("Average Time Between Calls");
 		this.statDetails.append(header.append(endpoint, totalCalls, avgTime));
 		var details = this.statDetails;
+
 		$.each(this.stats, function(index, stat) {
 			var endpointRow = $("<tr>");
 			var endpointName = stat[API]? stat[API] : stat["Uri"];
@@ -471,7 +472,6 @@ StatsPage.prototype = {
 		var startTime = calls["Start Time"];
 		var endTimeRel = Number((calls["End Time"] - startTime) / 1000).toFixed(0);
 		var maxHeight = 0;
-		
 		$.each(this.calls["Call List"], function(index, endpoint) {
 			var endpointData = {
 				label: endpoint[API],
@@ -541,9 +541,9 @@ StatsPage.prototype = {
 		
 		this.statDetails.empty();
 		var header = $("<tr>").addClass("header-row");
-		var endpoint = $("<th>").text("Endpoint").addClass("endpoint");
-		var totalCalls = $("<th>").text("Total Calls").addClass("center-text");
-		var avgTime = $("<th>").text("Average Time Between Calls").addClass("center-text");
+		var endpoint = $("<td>").text("Endpoint").addClass("endpoint");
+		var totalCalls = $("<td>").text("Total Calls").addClass("center-text");
+		var avgTime = $("<td>").text("Average Time Between Calls").addClass("center-text");
 		this.statDetails.append(header.append(endpoint, totalCalls, avgTime));
 		var details = this.statDetails;
 		$.each(this.stats, function (index, stat) {
@@ -567,10 +567,15 @@ StatsPage.prototype = {
 	_buildCountsGraph: function() {
 		this.callCountgraph.empty();
 		$.plot(this.callCountgraph, [ this.callCountGraphData ], this.callCountGraphOptions);
+		var barChart=this.callCountgraph.find('canvas');
+		barChart.attr('aria-label', 'Bar Chart Showing the details of Calls Per Endpoint');
 	},
 	_buildTimelineGraph: function() {
 		this.timelineGraph.empty();
 		$.plot(this.timelineGraph, this.timelineGraphData, this.timelineGraphOptions);
+		var timelineGraph=this.timelineGraph.find('canvas');
+		timelineGraph.attr('aria-label', 'Time Line Chart Showing the details of call per second');
+		
 	}
 }
 
