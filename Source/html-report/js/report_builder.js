@@ -197,7 +197,7 @@ RuleDetails.prototype = {
 		this.listItem = $("<li>");
 		var rowDiv = $("<div>").addClass("row-div");
 		var ruleNameDiv = $("<div>").addClass("rule-name").attr("id", "r" + ruleIdx + "" + endpointIdx);
-		this.expander = $("<div>").addClass("atg-expander");
+		this.expander = $(`<div role='button' tabindex='0' aria-expanded='false' aria-label='${rule.Name}'>`).addClass("atg-expander");
 		this.expanderData = [this, this.expander, ruleNameDiv];
 		this.expander.click(this.expanderData, toggleExpanderElemement);
 		var image = $("<img>").attr("src", "img/" + rule.Result + ".png").addClass("result-icon");
@@ -790,6 +790,8 @@ var getUrlParameter = function getUrlParameter(sParam) {
 };
 
 function toggleExpanderElemement(obj) {
+    var currentExpanded = $(this).attr("aria-expanded");
+    $(this).attr("aria-expanded", currentExpanded === "true" ? "false" : "true");
 	if (obj.data[0].expanded === true) {
 		obj.data[0].expandElement.hide();
 		obj.data[0].expanded = false;
@@ -798,6 +800,7 @@ function toggleExpanderElemement(obj) {
 
 		if (obj.data[2] != undefined) {
 			obj.data[2].removeClass("expanded");
+
 		}
 	}
 	else {
@@ -808,6 +811,7 @@ function toggleExpanderElemement(obj) {
 
 		if (obj.data[2] != undefined) {
 			obj.data[2].addClass("expanded");
+
 		}
 	}
 };
