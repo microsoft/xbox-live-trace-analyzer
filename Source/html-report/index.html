@@ -56,6 +56,20 @@
 </footer>
 </div>
 <script>
+	document.addEventListener("DOMContentLoaded", function() {
+    const resultContainers = document.querySelectorAll(".result-container");
+	const endpointHeader = document.querySelectorAll(".endpoint-header:nth-child(2)");
+	if (endpointHeader) {
+		endpointHeader[0].setAttribute("role", "heading");
+		endpointHeader[0].setAttribute("aria-level", "2");
+		endpointHeader[1].setAttribute("role", "heading");
+		endpointHeader[1].setAttribute("aria-level", "2");
+}
+    resultContainers.forEach(function(container) {
+        container.setAttribute("tabindex", "0");
+    });
+});
+
 	function changeAPISet (newAPI){
 		if(API != newAPI){
 			API = newAPI;
