@@ -33,9 +33,6 @@ body {
     margin: 0px;
     float: left;
 }
-.atg-nav-item > img {
-    filter:  none !important;
-}
 
 .atg-nav-item:hover, .atg-nav-item:focus{
     background-color: #464646;
@@ -58,12 +55,11 @@ body {
 }
 
 .atg-dropdown {
-    background-color: transparent;
-    width: 216px;
-    border: 1px inset black;
-    background-color: #3C3C3C;
+    width: 221px;
+    background-color: #2b2b2b;
     overflow: hidden;
-    height: 30px;
+    height: 39px;
+    padding: 4px;
 }
 
 .atg-dropdown select{
@@ -90,22 +86,17 @@ body {
 
 
 .atg-dropdown option{
-    background-color: transparent;
+    background-color: #1a1a1a;
     width: 250px;
     padding: 5px;
 }
-
-.atg-dropdown option:focus{
-    width: 250px;
-    background-color: red;
-    padding: 5px;
-}
-
+.atg-dropdown option:hover{
+    background-color: #1BA1E2 !important;
+  }
 .atg-heatmap {
     margin: auto;
 	width: 786px;
 	text-align: center;
-    
 }
 
 .atg-heatmap .col-header {
@@ -222,7 +213,8 @@ body {
 }
 .result-container ul {
     list-style-type: none;
-    padding-left: 0px;
+    padding-left: 1px;
+    padding-bottom: 3px;
 }
 
 .endpoint-results .endpoint-header {
@@ -491,16 +483,20 @@ pre {
 
 @media (prefers-color-scheme: light) {
     .atg-nav-item > img {
-        filter: drop-shadow(0px 0px 0px black)
+        filter: drop-shadow(1px 1px 1px black);
     }
+
 }
 @media only screen and (max-width: 768px) { 
-    .result-container {
-        width: 210vh;
-        overflow-y: auto;
+    .atg-container{
+        width: 100% !important;
     }
-    body{
-        overflow-x: auto;
+    .tableContainer{
+        overflow-x: scroll;
+        white-space:nowrap;
     }
-      }
-  
+}
+.atg-title{
+    letter-spacing: 0.07em !important;
+}
+

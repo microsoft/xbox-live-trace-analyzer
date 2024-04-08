@@ -11,9 +11,6 @@ Heatmap.prototype = {
 		var header = $("<thead>");
 		var headerRow = $("<tr>");
 		var serviceCell = $("<td>");
-
-		var table = this.table;
-
 		header.append(headerRow.append(serviceCell));
 
 		$.each(rules, function(index, r){
@@ -197,10 +194,11 @@ RuleDetails.prototype = {
 		this.listItem = $("<li>");
 		var rowDiv = $("<div>").addClass("row-div");
 		var ruleNameDiv = $("<div>").addClass("rule-name").attr("id", "r" + ruleIdx + "" + endpointIdx);
-		this.expander = $(`<div role='button' tabindex='0' aria-expanded='false' aria-label='${rule.Name}'>`).addClass("atg-expander");
+		this.expander = $(`<button type='button' tabindex='0' aria-expanded='false' aria-label='${rule.Name}'>`).addClass("atg-expander");
 		this.expanderData = [this, this.expander, ruleNameDiv];
 		this.expander.click(this.expanderData, toggleExpanderElemement);
 		var image = $("<img>").attr("src", "img/" + rule.Result + ".png").addClass("result-icon");
+		image.attr('alt',rule.Result);
 		ruleNameDiv.append(image, rule.Name);
 
 		rowDiv.append(this.expander, ruleNameDiv)
@@ -567,10 +565,14 @@ StatsPage.prototype = {
 	_buildCountsGraph: function() {
 		this.callCountgraph.empty();
 		$.plot(this.callCountgraph, [ this.callCountGraphData ], this.callCountGraphOptions);
+		var barChart=this.callCountgraph.find('canvas');
+		barChart.attr('aria-label', 'Bar Chart Showing the details of Calls Per Endpoint');
 	},
 	_buildTimelineGraph: function() {
 		this.timelineGraph.empty();
 		$.plot(this.timelineGraph, this.timelineGraphData, this.timelineGraphOptions);
+		var timelineGraph=this.timelineGraph.find('canvas');
+		timelineGraph.attr('aria-label', 'Time Line Chart Showing the details of call per second');
 	}
 }
 
