@@ -90,9 +90,7 @@ body {
     width: 250px;
     padding: 5px;
 }
-.atg-dropdown option:hover{
-    background-color: #1BA1E2 !important;
-  }
+
 .atg-heatmap {
     margin: auto;
 	width: 786px;
