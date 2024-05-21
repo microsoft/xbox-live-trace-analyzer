@@ -2,7 +2,7 @@
   "instanceUrl": "https://microsoft.visualstudio.com",
   "projectName": "xbox",
   "codeBaseName": "TFSOSG_xbox-live-trace-analyzer",
-  "areaPath": "Xbox\\GDX\\SDKs\\XSAPI",
+  "areaPath": "Xbox\\Developer\\SDKs\\XSAPI",
   "iterationPath": "Xbox\\Backlog",
   "notificationAliases": [ "gdxcoresdkteam@microsoft.com" ],
   "ignoreBranchName": true,
