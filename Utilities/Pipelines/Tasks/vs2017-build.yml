@@ -142,6 +142,8 @@ steps:
       sourceDirectory: '$(Pipeline.Workspace)\b\TraceAnalyzer\Tools-VPack'
       description: 'TraceAnalyzer.$(CONFIGURATION)'
       pushPkgName: 'TraceAnalyzer.$(CONFIGURATION)'
+    env:
+      PAT: $(PAT-XboxADO)
 
   - task: CmdLine@1
     displayName: postBuildScriptVPack.cmd
