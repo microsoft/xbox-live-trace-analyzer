@@ -75,37 +75,6 @@ steps:
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: Component Detection
 
-  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
-    displayName: 'ESRP CodeSigning'
-    inputs:
-      ConnectedServiceName: 'XboxLive.ClientSDK Connection'
-      FolderPath: '$(BUILD.BINARIESDIRECTORY)'
-      Pattern: '*XboxLiveTraceAnalyzer.exe'
-      signConfigType: inlineSignParams
-      inlineOperation: |
-          [
-            {
-                "KeyCode" : "CP-230012",
-                "OperationCode" : "SigntoolSign",
-                "Parameters" : {
-                    "OpusName" : "Microsoft",
-                    "OpusInfo" : "http://www.microsoft.com",
-                    "FileDigest" : "/fd \"SHA256\"",
-                    "PageHash" : "/NPH",
-                    "TimeStamp" : "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
-                },
-                "ToolName" : "sign",
-                "ToolVersion" : "1.0"
-            },
-            {
-                "KeyCode" : "CP-230012",
-                "OperationCode" : "SigntoolVerify",
-                "Parameters" : {},
-                "ToolName" : "sign",
-                "ToolVersion" : "1.0"
-            }
-          ]
-
   - task: BatchScript@1
     displayName: postBuildScript.cmd
     inputs:
@@ -115,26 +84,6 @@ steps:
   - task: NodeTool@0
     inputs:
       versionSpec: '14.x'
-  
-  # This is the Package ES simplified SDL sources template. 
-  - template: v2/Steps/PackageES/Windows.SDL.Sources.Analysis.OS.Undocked.yml@templates_onebranch
-    parameters:
-        globalsdl:
-            codeql: 
-                tsandjs:
-                  enabled: false
-                python:
-                  enabled: false
-                psscriptanalyzer:
-                  enable: true
-            prefast:
-                enabled: false
-
-  # This is the Package ES simplified SDL binary template. 
-  - template: v2/Steps/PackageES/Windows.SDL.Binary.Analysis.OS.Undocked.yml@templates_onebranch
-    parameters:
-        variables:
-            ob_outputDirectory: $(BUILD.BINARIESDIRECTORY)
 
   - task: PkgESVPack@12
     displayName: 'Package ES - VPack'
