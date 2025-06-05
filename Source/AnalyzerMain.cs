@@ -229,7 +229,6 @@ namespace XboxLiveTrace
                         {
                             using (var outputFile = new System.IO.Compression.ZipArchive(htmlReport))
                             {
-                                
                                 foreach (var entry in outputFile.Entries.Where(e => e.Name.Contains('.')))
                                 {
                                     bool create_subDir = analyzer.ConsoleList.Count() > 1;
@@ -253,9 +252,18 @@ namespace XboxLiveTrace
                                         if (!Directory.Exists(Path.Combine(path, "js")))
                                             Directory.CreateDirectory(Path.Combine(path, "js"));
 
+                                        string destinationPath = Path.GetFullPath(Path.Combine(path, entry.FullName));
+                                        string basePath = Path.GetFullPath(path);
+
+                                        if (!destinationPath.StartsWith(basePath, StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            var errorMessage = $"Potentially unsafe zip path: {entry.FullName}";
+                                            throw new ArgumentException(errorMessage);
+                                        }
+
                                         using (var temp = entry.Open())
                                         {
-                                            using (var reportFile = new FileStream(Path.Combine(path, entry.FullName), FileMode.Create))
+                                            using (var reportFile = new FileStream(destinationPath, FileMode.Create))
                                             {
                                                 temp.CopyTo(reportFile);
                                             }
