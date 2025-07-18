@@ -131,10 +131,11 @@ ViolationDetails.prototype = {
 		this.violation = violation;
 		this.violationDiv = $("<div>");
 
-		this.expander = $("<div>").addClass("atg-expander");
+		this.expander = $(`<button type='button' tabindex='0' aria-expanded='false' aria-label='${violation.Summary}'>`).addClass("atg-expander");
 		var violationDescription = $("<div>").addClass("summary-line");
 		this.expanderData = [this, this.expander, violationDescription];
 		var image = $("<img>").attr("src", "img/" + violation.Level + ".png").addClass("result-icon");
+		image.attr('alt', violation.Level);
 		violationDescription.append(image, violation.Summary);
 
 		var callList = $("<ul>").css({ "padding-left": "44px" });
@@ -304,8 +305,11 @@ EndpointDetails.prototype = {
 
 			endpointList.append(listItem);
 		});
-
-		this.endpointContainer.append(endpointList.append($("<div>").css({ "height": "435px", "border-left": "1px solid black" })));
+			var dividerLi = $("<li>").append(
+				$("<div>").css({ "height": "435px", "border-left": "1px solid black" })
+		);
+		endpointList.append(dividerLi);
+		this.endpointContainer.append(endpointList);
 	},
 	
 	show: function(element) {
@@ -610,7 +614,7 @@ CallPage.prototype = {
 				
 				callLI.append("<div style='float: left; width: 40px; text-align: right; padding-right: 5px; color: #DCDCDC' id='call" + call.Id + "'><b>" + call.Id + "</b></div>");
 				
-				var callDetailDiv = $("<div>").css({"margin-left":"40px", "padding-left": "5px"});
+				var callDetailDiv = $("<div>").css({"margin-left":"40px", "padding-left": "5px", "white-space": "normal"});
 				
 				callDetailDiv.append("<div>" + call.Uri + "</div>");
 				
