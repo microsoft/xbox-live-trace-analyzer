@@ -438,8 +438,15 @@ StatsPage.prototype = {
 	build: function(stats, calls) {
 		this.stats = stats;
 		this.calls = calls;
-		this.countTitle = $("<div>").addClass("graph-header").text("Calls Per Endpoint");
-		this.callCountgraph = $("<div>").css({ "width": "780px", "height": "300px", "margin": "auto"});
+		this.countTitle = $("<div>").addClass("graph-header")
+		.attr("tabindex", "0") 
+        .attr("role", "region")
+		.text("Calls Per Endpoint");
+		this.callCountgraph = $("<div>").css({ "width": "780px", "height": "300px", "margin": "auto"})
+		.attr("tabindex", "0") // Make focusable by keyboard
+        .attr("role", "region")
+        .attr("aria-label", "Bar Chart Showing the details of Calls Per Endpoint");
+
 		this._buildCountsGraph(this.stats);
 		
 		
@@ -467,8 +474,14 @@ StatsPage.prototype = {
 			callCountGraphData.push([ stat["Call Count"],stat[API] ]);
 		});
 		
-		this.timelineTitle = $("<div>").addClass("graph-header").text("Calls Per Second");
-		this.timelineGraph = $("<div>").css({ "width": "780px", "height": "300px", "margin": "auto"});
+		this.timelineTitle = $("<div>").addClass("graph-header")
+		.attr("tabindex", "0") 
+        .attr("role", "region")
+		.text("Calls Per Second");
+		this.timelineGraph = $("<div>").css({ "width": "780px", "height": "300px", "margin": "auto"})
+		.attr("tabindex", "0") // Make focusable by keyboard
+    	.attr("role", "region")
+    	.attr("aria-label", "Time Line Chart Showing the details of call per second");
 		var timelineGraphData = this.timelineGraphData;
 		var startTime = calls["Start Time"];
 		var endTimeRel = Number((calls["End Time"] - startTime) / 1000).toFixed(0);
@@ -573,11 +586,36 @@ StatsPage.prototype = {
 		barChart.attr('aria-label', 'Bar Chart Showing the details of Calls Per Endpoint');
 	},
 	_buildTimelineGraph: function() {
-		this.timelineGraph.empty();
-		$.plot(this.timelineGraph, this.timelineGraphData, this.timelineGraphOptions);
-		var timelineGraph=this.timelineGraph.find('canvas');
-		timelineGraph.attr('aria-label', 'Time Line Chart Showing the details of call per second');
-	}
+    this.timelineGraph.empty();
+    var plot = $.plot(this.timelineGraph, this.timelineGraphData, this.timelineGraphOptions);
+    var timelineGraph = this.timelineGraph.find('canvas');
+    timelineGraph.attr('aria-label', 'Time Line Chart Showing the details of call per second');
+
+    this.timelineGraph.off("keydown.flotPanZoom");
+    this.timelineGraph.on("keydown.flotPanZoom", function (e) {
+        const PAN_AMOUNT = 50; 
+        const ZOOM_FACTOR = 1.2;
+
+        switch (e.key) {
+            case "ArrowRight":
+                plot.pan({ left: PAN_AMOUNT }); 
+                e.preventDefault();
+                break;
+            case "ArrowLeft":
+                plot.pan({ left: -PAN_AMOUNT }); 
+                e.preventDefault();
+                break;
+            case "ArrowUp":
+                plot.zoom({ amount: ZOOM_FACTOR, center: { left: null, top: null } });
+                e.preventDefault();
+                break;
+            case "ArrowDown":
+                plot.zoom({ amount: 1 / ZOOM_FACTOR, center: { left: null, top: null } });
+                e.preventDefault();
+                break;
+        }
+    });
+}
 }
 
 function CallPage() {
