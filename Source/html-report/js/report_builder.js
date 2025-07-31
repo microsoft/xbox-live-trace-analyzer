@@ -131,10 +131,11 @@ ViolationDetails.prototype = {
 		this.violation = violation;
 		this.violationDiv = $("<div>");
 
-		this.expander = $("<div>").addClass("atg-expander");
+		this.expander = $(`<button type='button' tabindex='0' aria-expanded='false' aria-label='${violation.Summary}'>`).addClass("atg-expander");
 		var violationDescription = $("<div>").addClass("summary-line");
 		this.expanderData = [this, this.expander, violationDescription];
 		var image = $("<img>").attr("src", "img/" + violation.Level + ".png").addClass("result-icon");
+		image.attr('alt', violation.Level);
 		violationDescription.append(image, violation.Summary);
 
 		var callList = $("<ul>").css({ "padding-left": "44px" });
@@ -304,8 +305,11 @@ EndpointDetails.prototype = {
 
 			endpointList.append(listItem);
 		});
-
-		this.endpointContainer.append(endpointList.append($("<div>").css({ "height": "435px", "border-left": "1px solid black" })));
+			var dividerLi = $("<li>").append(
+				$("<div>").css({ "height": "435px", "border-left": "1px solid black" })
+		);
+		endpointList.append(dividerLi);
+		this.endpointContainer.append(endpointList);
 	},
 	
 	show: function(element) {
@@ -434,8 +438,15 @@ StatsPage.prototype = {
 	build: function(stats, calls) {
 		this.stats = stats;
 		this.calls = calls;
-		this.countTitle = $("<div>").addClass("graph-header").text("Calls Per Endpoint");
-		this.callCountgraph = $("<div>").css({ "width": "780px", "height": "300px", "margin": "auto"});
+		this.countTitle = $("<div>").addClass("graph-header")
+		.attr("tabindex", "0") 
+        .attr("role", "region")
+		.text("Calls Per Endpoint");
+		this.callCountgraph = $("<div>").css({ "width": "780px", "height": "300px", "margin": "auto"})
+		.attr("tabindex", "0") // Make focusable by keyboard
+        .attr("role", "region")
+        .attr("aria-label", "Bar Chart Showing the details of Calls Per Endpoint");
+
 		this._buildCountsGraph(this.stats);
 		
 		
@@ -463,8 +474,14 @@ StatsPage.prototype = {
 			callCountGraphData.push([ stat["Call Count"],stat[API] ]);
 		});
 		
-		this.timelineTitle = $("<div>").addClass("graph-header").text("Calls Per Second");
-		this.timelineGraph = $("<div>").css({ "width": "780px", "height": "300px", "margin": "auto"});
+		this.timelineTitle = $("<div>").addClass("graph-header")
+		.attr("tabindex", "0") 
+        .attr("role", "region")
+		.text("Calls Per Second");
+		this.timelineGraph = $("<div>").css({ "width": "780px", "height": "300px", "margin": "auto"})
+		.attr("tabindex", "0") // Make focusable by keyboard
+    	.attr("role", "region")
+    	.attr("aria-label", "Time Line Chart Showing the details of call per second");
 		var timelineGraphData = this.timelineGraphData;
 		var startTime = calls["Start Time"];
 		var endTimeRel = Number((calls["End Time"] - startTime) / 1000).toFixed(0);
@@ -569,11 +586,36 @@ StatsPage.prototype = {
 		barChart.attr('aria-label', 'Bar Chart Showing the details of Calls Per Endpoint');
 	},
 	_buildTimelineGraph: function() {
-		this.timelineGraph.empty();
-		$.plot(this.timelineGraph, this.timelineGraphData, this.timelineGraphOptions);
-		var timelineGraph=this.timelineGraph.find('canvas');
-		timelineGraph.attr('aria-label', 'Time Line Chart Showing the details of call per second');
-	}
+    this.timelineGraph.empty();
+    var plot = $.plot(this.timelineGraph, this.timelineGraphData, this.timelineGraphOptions);
+    var timelineGraph = this.timelineGraph.find('canvas');
+    timelineGraph.attr('aria-label', 'Time Line Chart Showing the details of call per second');
+
+    this.timelineGraph.off("keydown.flotPanZoom");
+    this.timelineGraph.on("keydown.flotPanZoom", function (e) {
+        const PAN_AMOUNT = 50; 
+        const ZOOM_FACTOR = 1.2;
+
+        switch (e.key) {
+            case "ArrowRight":
+                plot.pan({ left: PAN_AMOUNT }); 
+                e.preventDefault();
+                break;
+            case "ArrowLeft":
+                plot.pan({ left: -PAN_AMOUNT }); 
+                e.preventDefault();
+                break;
+            case "ArrowUp":
+                plot.zoom({ amount: ZOOM_FACTOR, center: { left: null, top: null } });
+                e.preventDefault();
+                break;
+            case "ArrowDown":
+                plot.zoom({ amount: 1 / ZOOM_FACTOR, center: { left: null, top: null } });
+                e.preventDefault();
+                break;
+        }
+    });
+}
 }
 
 function CallPage() {
@@ -610,7 +652,7 @@ CallPage.prototype = {
 				
 				callLI.append("<div style='float: left; width: 40px; text-align: right; padding-right: 5px; color: #DCDCDC' id='call" + call.Id + "'><b>" + call.Id + "</b></div>");
 				
-				var callDetailDiv = $("<div>").css({"margin-left":"40px", "padding-left": "5px"});
+				var callDetailDiv = $("<div>").css({"margin-left":"40px", "padding-left": "5px", "white-space": "normal"});
 				
 				callDetailDiv.append("<div>" + call.Uri + "</div>");
 				
