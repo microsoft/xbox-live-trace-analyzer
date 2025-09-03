@@ -31,9 +31,9 @@ ruleDisplayFunctions["Repeated Calls"] = function(rule){
 	var headerRow = $("<tr>");
 	var resultRow = $("<tr>");
 	
-	headerRow.append($("<td>").addClass("header").text("Total Calls"));
-	headerRow.append($("<td>").addClass("header").text("Duplicates"));
-	headerRow.append($("<td>").addClass("header").text("Percentage"));
+	headerRow.append($("<th>").addClass("header").text("Total Calls"));
+	headerRow.append($("<th>").addClass("header").text("Duplicates"));
+	headerRow.append($("<th>").addClass("header").text("Percentage"));
 	
 	resultRow.append($("<td>").addClass("cell").text(results["Total Calls"]));
 	resultRow.append($("<td>").addClass("warning").text(results["Duplicates"]));
@@ -135,11 +135,11 @@ ruleDisplayFunctions["Burst Detection"] = function(rule){
 	var headerRow = $("<tr>");
 	var resultRow = $("<tr>");
 	
-	headerRow.append($("<td>").addClass("header").text("Average Calls Per Second"));
-	headerRow.append($("<td>").addClass("header").text("Std. Deviation"));
-	headerRow.append($("<td>").addClass("header").text("Min. Calls in Burst"));
-	headerRow.append($("<td>").addClass("header").text("Burst Time Window in Seconds"));
-	headerRow.append($("<td>").addClass("header").text("Total Bursts Found"));
+	headerRow.append($("<th>").addClass("header").text("Average Calls Per Second"));
+	headerRow.append($("<th>").addClass("header").text("Std. Deviation"));
+	headerRow.append($("<th>").addClass("header").text("Min. Calls in Burst"));
+	headerRow.append($("<th>").addClass("header").text("Burst Time Window in Seconds"));
+	headerRow.append($("<th>").addClass("header").text("Total Bursts Found"));
 	
 	resultRow.append($("<td>").addClass("cell").text(Number(rule.ResultData["Avg. Calls Per Sec."]).toFixed(3)));
 	resultRow.append($("<td>").addClass("cell").text(Number(rule.ResultData["Std. Deviation"]).toFixed(4)));
@@ -164,10 +164,10 @@ ruleDisplayFunctions["Small-Batch Detection"] = function(rule){
 	var headerRow = $("<tr>");
 	var resultRow = $("<tr>");
 	
-	headerRow.append($("<td>").addClass("header").text("Total Batch Calls"));
-	headerRow.append($("<td>").addClass("header").text("Min. Users Allowed"));
-	headerRow.append($("<td>").addClass("header").text("Calls Below Count"));
-	headerRow.append($("<td>").addClass("header").text("Percent Below Count"));
+	headerRow.append($("<th>").addClass("header").text("Total Batch Calls"));
+	headerRow.append($("<th>").addClass("header").text("Min. Users Allowed"));
+	headerRow.append($("<th>").addClass("header").text("Calls Below Count"));
+	headerRow.append($("<th>").addClass("header").text("Percent Below Count"));
 	
 	resultRow.append($("<td>").addClass("cell").text(Number(rule.ResultData["Total Batch Calls"])));
 	resultRow.append($("<td>").addClass("cell").text(Number(rule.ResultData["Min. Users Allowed"])));

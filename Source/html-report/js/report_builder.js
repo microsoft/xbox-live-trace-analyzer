@@ -10,13 +10,13 @@ Heatmap.prototype = {
 		this.table = $("<table>").addClass("atg-heatmap");
 		var header = $("<thead>");
 		var headerRow = $("<tr>");
-		var serviceCell = $("<td>");
+		var serviceCell = $("<th>");
 		header.append(headerRow.append(serviceCell));
 
 		$.each(rules, function(index, r){
 			var cell = $("<div>").text(r);
 
-			var ruleCell = $("<td>").addClass("col-header")
+			var ruleCell = $("<th>").addClass("col-header")
 									.css({"text-align": "center"})
 									.append(cell);
 
