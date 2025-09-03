@@ -337,7 +337,7 @@ EndpointDetails.prototype = {
 			$(header).text(results[Math.floor(idx)][API + "Service"]);
 		});
 		$.each(this.rules, function(index, rule){
-			rule.changeAPI(API);
+		 rule.changeAPI(API);
 		});
 	}
 };
@@ -690,7 +690,7 @@ CallPage.prototype = {
 		});
 		
 		
-		this.callDetails = callDetails.append(endpointList.append($("<div>").css("height","600px")));
+		this.callDetails = callDetails.append(endpointList.append($("<li>").append($("<div>").css("height","600px"))));
 	},
 	show: function(element, callId) {
 		element.append(this.callDetails);

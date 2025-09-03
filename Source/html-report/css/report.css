@@ -367,6 +367,7 @@ body {
 }
 
 .warning{
+    color: #1a1a1a;
     background-color: #ff9900;
 }
 
@@ -483,6 +484,9 @@ pre {
 @media (prefers-color-scheme: light) {
     .atg-nav-item > img {
         filter: drop-shadow(1px 1px 1px black);
+    }
+    .xbox-logo{
+        filter: drop-shadow(1px 1px 1px black)
     }
 
 }
