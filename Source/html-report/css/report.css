@@ -367,6 +367,7 @@ body {
 }
 
 .warning{
+    color: #1a1a1a;
     background-color: #ff9900;
 }
 
@@ -389,7 +390,10 @@ body {
     padding: 5px;
     border: 1px inset black;
 }
-
+.detail-table th {
+    border: 1px inset black;
+    text-align: center;
+}
 .detail-table .header {
     background-color: #3C3C3C;
     min-width: 100px;
@@ -483,6 +487,9 @@ pre {
 @media (prefers-color-scheme: light) {
     .atg-nav-item > img {
         filter: drop-shadow(1px 1px 1px black);
+    }
+    .xbox-logo{
+        filter: drop-shadow(1px 1px 1px black)
     }
 
 }

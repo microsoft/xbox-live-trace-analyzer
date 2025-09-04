@@ -10,13 +10,13 @@ Heatmap.prototype = {
 		this.table = $("<table>").addClass("atg-heatmap");
 		var header = $("<thead>");
 		var headerRow = $("<tr>");
-		var serviceCell = $("<td>");
+		var serviceCell = $("<th>");
 		header.append(headerRow.append(serviceCell));
 
 		$.each(rules, function(index, r){
 			var cell = $("<div>").text(r);
 
-			var ruleCell = $("<td>").addClass("col-header")
+			var ruleCell = $("<th>").addClass("col-header")
 									.css({"text-align": "center"})
 									.append(cell);
 
@@ -337,7 +337,7 @@ EndpointDetails.prototype = {
 			$(header).text(results[Math.floor(idx)][API + "Service"]);
 		});
 		$.each(this.rules, function(index, rule){
-			rule.changeAPI(API);
+		 rule.changeAPI(API);
 		});
 	}
 };
@@ -690,7 +690,7 @@ CallPage.prototype = {
 		});
 		
 		
-		this.callDetails = callDetails.append(endpointList.append($("<div>").css("height","600px")));
+		this.callDetails = callDetails.append(endpointList.append($("<li>").append($("<div>").css("height","600px"))));
 	},
 	show: function(element, callId) {
 		element.append(this.callDetails);
