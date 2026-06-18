@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -123,7 +124,10 @@ namespace XboxLiveTrace
                         {
                             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
-                            foreach (var assembly in assemblies.Where(a => a.GlobalAssemblyCache == false))
+                            // The Global Assembly Cache no longer exists in modern .NET; skip
+                            // dynamic assemblies (which cannot be reflected for types) and scan
+                            // the rest for custom rule implementations.
+                            foreach (var assembly in assemblies.Where(a => !a.IsDynamic))
                             {
                                 foreach(var type in assembly.GetTypes().Where(t => typeof(IRule).IsAssignableFrom(t)))
                                 {
@@ -263,7 +267,24 @@ namespace XboxLiveTrace
 
                     m_rulesEngine.RunRulesOnData(console.Key, console.Value);
 
-                    String consolePath = Path.Combine(OutputDirectory, console.Key);
+                    // The console key is derived from the "x-clientip" value in the .saz
+                    // trace, which is fully attacker-controlled when the trace comes from an
+                    // untrusted third party. Sanitize it to a single safe path segment and
+                    // verify the result stays within OutputDirectory so a crafted value
+                    // (e.g. "..\..\..\Windows", "C:\evil") cannot redirect report writes to
+                    // an arbitrary directory (path traversal).
+                    String consolePath = Path.Combine(OutputDirectory, GetSafePathSegment(console.Key));
+
+                    String outputRoot = Path.GetFullPath(OutputDirectory);
+                    String resolvedConsolePath = Path.GetFullPath(consolePath);
+                    String outputRootWithSeparator = outputRoot.EndsWith(Path.DirectorySeparatorChar.ToString())
+                        ? outputRoot
+                        : outputRoot + Path.DirectorySeparatorChar;
+                    if (!resolvedConsolePath.StartsWith(outputRootWithSeparator, StringComparison.OrdinalIgnoreCase))
+                    {
+                        Console.Error.WriteLine($"Skipping console with unsafe identifier (would write outside the output directory): {console.Key}");
+                        continue;
+                    }
 
                     if (!Directory.Exists(consolePath))
                     {
@@ -273,6 +294,36 @@ namespace XboxLiveTrace
                     m_reports.ForEach(report => report.RunReport(consolePath, m_rulesEngine.GetResults(console.Key), m_data.m_endpointToService));
                 }
             }
+        }
+
+        /// <summary>
+        /// Converts an untrusted identifier (e.g. the x-clientip value from a .saz trace) into a
+        /// single file-system-safe path segment. Any character that is not valid in a file name —
+        /// including directory separators and the ':' drive specifier — is replaced with '_', which
+        /// neutralizes path-traversal ("..\") and absolute/drive-rooted paths. Returns "Unknown" for
+        /// values that are empty or resolve to the current/parent directory.
+        /// </summary>
+        private static String GetSafePathSegment(String name)
+        {
+            if (String.IsNullOrWhiteSpace(name))
+            {
+                return "Unknown";
+            }
+
+            var invalidChars = Path.GetInvalidFileNameChars();
+            var sanitized = new StringBuilder(name.Length);
+            foreach (char c in name)
+            {
+                sanitized.Append(Array.IndexOf(invalidChars, c) >= 0 ? '_' : c);
+            }
+
+            String result = sanitized.ToString().Trim().TrimEnd('.');
+            if (result.Length == 0 || result == "." || result == "..")
+            {
+                return "Unknown";
+            }
+
+            return result;
         }
 
         public void RunUriConverterOnData()
