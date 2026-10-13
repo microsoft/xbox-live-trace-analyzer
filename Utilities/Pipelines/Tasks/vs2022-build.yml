@@ -58,13 +58,13 @@ steps:
       filename: Utilities/Pipelines/Scripts/preCompileScript.cmd
       modifyEnvironment: false
     
-  # Build the Visual Studio 17 solution.
+  # Build the solution with the Visual Studio 2022 toolset.
   # Ref: https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/build/visual-studio-build
   - task: VSBuild@1
     displayName: Build ${{ parameters.platform }}+${{ parameters.configuration }} Solution
     inputs:
       solution: 'Source\XBLTraceAnalyzer.sln'
-      vsVersion: 15.0
+      vsVersion: 17.0
       msbuildArchitecture: x64
       platform: ${{ parameters.platform }}
       configuration: ${{ parameters.configuration }}
@@ -85,28 +85,8 @@ steps:
     inputs:
       versionSpec: '14.x'
 
-  - task: PkgESVPack@12
-    displayName: 'Package ES - VPack'
-    inputs:
-      sourceDirectory: '$(Pipeline.Workspace)\b\TraceAnalyzer\Tools-VPack'
-      description: 'TraceAnalyzer.$(CONFIGURATION)'
-      pushPkgName: 'TraceAnalyzer.$(CONFIGURATION)'
-    env:
-      PAT: $(PAT-XboxADO)
-
-  - task: CmdLine@1
-    displayName: postBuildScriptVPack.cmd
-    inputs:
-      filename: 'Utilities/Pipelines/Scripts/postBuildScriptVPack.cmd'
-
   - task: PublishPipelineArtifact@1
     displayName: 'Publish Pipeline Artifact'
     inputs:
       targetPath: '$(Pipeline.Workspace)\b\TraceAnalyzer'
       artifact: 'Trace_Analyzer_PipelineArtifacts_$(CONFIGURATION)'
-
-  - task: PublishPipelineArtifact@1
-    displayName: 'Publish Pipeline Artifact VPack'
-    inputs:
-      targetPath: '$(Pipeline.Workspace)\b\TraceAnalyzer\Tools-VPack'
-      artifact: 'Trace_Analyzer_PipelineArtifacts_VPack_$(CONFIGURATION)'
